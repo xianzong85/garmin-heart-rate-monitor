@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="tips">
+    <text class="tips-text tips-text-first">使用说明：</text>
+    <text class="tips-text">1. 请先在手机上关闭佳明Connect应用</text>
+    <text class="tips-text">2. 确保手表已开启并在附近</text>
+    <text class="tips-text">3. 点击下方按钮开始搜索</text>
+    <text class="tips-text">4. 在设备列表中选择你的设备</text>
+  </view>
+
+  <view class="status">
+    <text>状态：{{statusText}}</text>
+    <text class="heart-rate">心率：{{heartRate}} BPM</text>
+  </view>
+
+  <!-- 设备列表 -->
+  <view class="device-list" wx:if="{{devices.length > 0 && !connected}}">
+    <view class="device-list-header">
+      <text>发现的设备</text>
+      <text class="device-count">({{devices.length}})</text>
+    </view>
+    <view class="device-item" wx:for="{{devices}}" wx:key="deviceId" bindtap="connectToDevice" data-device="{{item}}">
+      <view class="device-info">
+        <text class="device-name">{{item.name || '未知设备'}}</text>
+        <text class="device-id">ID: {{item.deviceId}}</text>
+      </view>
+      <text class="rssi">信号: {{item.RSSI}} dBm</text>
+    </view>
+  </view>
+
+  <view class="chart-container">
+    <view class="chart-wrapper">
+      <canvas type="2d" id="heartRateChart" class="chart"></canvas>
+    </view>
+  </view>
+
+  <view class="buttons">
+    <button class="search-btn" type="primary" bindtap="startSearch" disabled="{{isSearching || connected}}">搜索设备</button>
+    <button class="disconnect-btn" type="warn" bindtap="disconnectDevice" disabled="{{!connected}}">断开连接</button>
+  </view>
+</view>
