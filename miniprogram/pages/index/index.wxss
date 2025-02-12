@@ -1,130 +1,93 @@
+/* 全局样式 */
 .container {
-  padding: 20rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 30rpx;
+  background: #f5f7fa;
+  min-height: 100vh;
 }
 
-.header {
-  text-align: center;
-  padding: 20rpx 0;
-}
-
-.title {
-  font-size: 36rpx;
-  font-weight: bold;
-}
-
-.content {
-  width: 100%;
-}
-
-.status-box {
-  margin: 20rpx;
-  padding: 20rpx;
-  background-color: #f8f9fa;
-  border-radius: 10rpx;
-  text-align: center;
-}
-
-.status-box.connected {
-  background-color: #d4edda;
-}
-
-.status-text {
-  font-size: 28rpx;
-  color: #333;
-}
-
-.heart-rate-box {
-  margin: 40rpx 0;
-  text-align: center;
-}
-
-.heart-rate {
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-}
-
-.heart-rate-value {
-  font-size: 80rpx;
-  font-weight: bold;
-  color: #dc3545;
-}
-
-.heart-rate-unit {
-  font-size: 32rpx;
-  color: #666;
-  margin-left: 10rpx;
-}
-
+/* 提示区域 */
 .tips {
-  width: 90%;
-  background-color: #f8f9fa;
-  padding: 20rpx;
-  border-radius: 10rpx;
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 16rpx;
   margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
 }
 
 .tips-text {
   display: block;
-  font-size: 28rpx;
   color: #666;
+  font-size: 28rpx;
   line-height: 1.8;
+  margin-bottom: 10rpx;
 }
 
 .tips-text-first {
   color: #333;
-  font-weight: bold;
-  margin-bottom: 10rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-bottom: 20rpx;
 }
 
+/* 状态区域 */
 .status {
-  width: 90%;
-  text-align: center;
-  margin: 20rpx 0;
-}
-
-.heart-rate {
-  font-size: 48rpx;
-  color: #dc3545;
-  font-weight: bold;
-  display: block;
-  margin-top: 10rpx;
-}
-
-.device-list {
-  width: 90%;
-  margin: 20rpx 0;
   background: #fff;
-  border-radius: 10rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+  padding: 30rpx;
+  border-radius: 16rpx;
+  margin-bottom: 30rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  font-size: 32rpx;
+  color: #333;
+}
+
+.pk-timer {
+  display: block;
+  margin-top: 16rpx;
+  color: #f56c6c;
+  font-weight: 500;
+  font-size: 36rpx;
+}
+
+/* 设备列表 */
+.device-list {
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  overflow: hidden;
 }
 
 .device-list-header {
-  padding: 20rpx;
-  border-bottom: 1rpx solid #eee;
+  padding: 24rpx 30rpx;
+  background: #f8f9fa;
+  border-bottom: 2rpx solid #eee;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .device-count {
-  color: #666;
+  color: #909399;
   margin-left: 10rpx;
   font-size: 24rpx;
 }
 
 .device-item {
-  padding: 20rpx;
-  border-bottom: 1rpx solid #eee;
+  padding: 24rpx 30rpx;
+  border-bottom: 2rpx solid #f5f5f5;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: all 0.3s;
 }
 
 .device-item:active {
-  background-color: #f5f5f5;
+  background-color: #f5f7fa;
+}
+
+.device-item.connecting {
+  background: #f0f9ff;
 }
 
 .device-info {
@@ -134,35 +97,110 @@
 .device-name {
   font-size: 32rpx;
   color: #333;
-  display: block;
+  font-weight: 500;
 }
 
 .device-id {
   font-size: 24rpx;
-  color: #999;
-  margin-top: 4rpx;
-  display: block;
+  color: #909399;
+  margin-top: 8rpx;
 }
 
 .rssi {
   font-size: 24rpx;
-  color: #666;
-  margin-left: 20rpx;
+  color: #909399;
+  background: #f5f7fa;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.connect-status {
+  margin-left: 16rpx;
+}
+
+.device-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+/* 已连接设备 */
+.connected-devices {
+  margin-bottom: 30rpx;
+}
+
+.device-panel {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+  transition: all 0.3s;
+}
+
+.device-panel:last-child {
+  margin-bottom: 0;
+}
+
+.device-panel.active {
+  border: 2rpx solid #67c23a;
+}
+
+.device-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.device-status {
+  text-align: right;
+}
+
+.heart-rate {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: #f56c6c;
+  display: block;
+}
+
+.heart-rate.pulse {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.unit {
+  font-size: 24rpx;
+  color: #909399;
+  font-weight: normal;
+}
+
+.rank {
+  display: block;
+  font-size: 28rpx;
+  color: #67c23a;
+  margin-top: 8rpx;
+  font-weight: 500;
 }
 
 .chart-container {
   width: 100%;
-  padding: 20rpx;
-  background: #fff;
-  border-radius: 10rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-  margin: 20rpx 0;
-}
-
-.chart-wrapper {
-  width: 100%;
-  height: 300px;
+  height: 300rpx;
   position: relative;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  overflow: hidden;
 }
 
 .chart {
@@ -173,21 +211,167 @@
   top: 0;
 }
 
+/* 按钮样式 */
 .button-group {
-  margin: 40rpx 20rpx;
-}
-
-.buttons {
-  width: 90%;
+  padding: 30rpx;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  box-shadow: 0 -2rpx 10rpx rgba(0,0,0,0.05);
   display: flex;
-  justify-content: space-around;
-  margin-top: 30rpx;
+  justify-content: center;
+  gap: 20rpx;
 }
 
-.search-btn, .disconnect-btn {
-  width: 45% !important;
+.search-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: #409eff;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 44rpx;
+  transition: all 0.3s;
 }
 
-.search-btn[disabled], .disconnect-btn[disabled] {
-  opacity: 0.6;
+.search-btn:active {
+  opacity: 0.9;
+}
+
+.search-btn[disabled] {
+  background: #a0cfff;
+  opacity: 1;
+}
+
+.search-btn.searching {
+  opacity: 0.9;
+}
+
+.pk-btn {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: #67c23a;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 44rpx;
+  transition: all 0.3s;
+}
+
+.pk-btn:active {
+  opacity: 0.9;
+}
+
+.pk-btn.pk-active {
+  background: #f56c6c;
+}
+
+.pk-btn[disabled] {
+  background: #b3e19d;
+  opacity: 1;
+}
+
+/* 添加动画相关的样式 */
+@keyframes searching {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dot {
+  0% { transform: scale(0.3); opacity: 0.3; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.3); opacity: 0.3; }
+}
+
+/* 状态图标 */
+.status-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin: 0 auto 16rpx;
+  border-radius: 50%;
+  border: 4rpx solid #409eff;
+  border-top-color: transparent;
+  display: none;
+}
+
+.status-icon.searching {
+  display: block;
+  animation: rotate 1s linear infinite;
+}
+
+/* 加载动画 */
+.loading-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.dot {
+  width: 8rpx;
+  height: 8rpx;
+  background: #409eff;
+  border-radius: 50%;
+}
+
+.dot:nth-child(1) { animation: dot 1s infinite 0s; }
+.dot:nth-child(2) { animation: dot 1s infinite 0.2s; }
+.dot:nth-child(3) { animation: dot 1s infinite 0.4s; }
+
+/* 按钮加载状态 */
+.btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.loading-icon {
+  width: 32rpx;
+  height: 32rpx;
+  border: 3rpx solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: rotate 1s linear infinite;
+}
+
+/* 断开连接按钮 */
+.device-footer {
+  margin-top: 20rpx;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.disconnect-btn {
+  font-size: 24rpx;
+  color: #f56c6c;
+  padding: 8rpx 20rpx;
+  border: 1rpx solid #f56c6c;
+  border-radius: 24rpx;
+  transition: all 0.3s;
+}
+
+.disconnect-btn:active {
+  background: #fff3f3;
+}
+
+/* 提示文本 */
+.refresh-hint {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
 }

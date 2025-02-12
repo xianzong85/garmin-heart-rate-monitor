@@ -1,0 +1,94 @@
+<view class="container">
+  <!-- 状态区域 -->
+  <view class="status">
+    <view class="status-icon {{isSearching ? 'searching' : ''}}"></view>
+    <text class="status-text">{{statusText}}</text>
+    <block wx:if="{{isPKMode}}">
+      <text class="pk-timer">剩余时间: {{pkTimeLeft}}秒</text>
+    </block>
+  </view>
+
+  <!-- 已连接设备 -->
+  <view class="connected-devices">
+    <view class="device-panel {{item.heartRate ? 'active' : ''}}" 
+          wx:for="{{connectedDeviceList}}" 
+          wx:key="deviceId">
+      <view class="device-header">
+        <text class="device-name">{{item.name}}</text>
+        <view class="device-status">
+          <text class="heart-rate {{item.heartRate ? 'pulse' : ''}}">
+            {{item.heartRate || '--'}} <text class="unit">BPM</text>
+          </text>
+          <text wx:if="{{isPKMode}}" class="rank">第{{item.rank}}名</text>
+        </view>
+      </view>
+      <view class="chart-container">
+        <canvas type="2d" id="heartRateChart_{{item.deviceId}}" class="chart"></canvas>
+      </view>
+      <view class="device-footer">
+        <text class="disconnect-btn" bindtap="disconnectDevice" data-device-id="{{item.deviceId}}">断开连接</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 按钮区域 -->
+  <view class="button-group">
+    <button class="add-btn" bindtap="showSearchDevices">
+      <text>添加设备</text>
+    </button>
+    <button class="pk-btn {{isPKMode ? 'pk-active' : ''}}" 
+            bindtap="startPK" 
+            disabled="{{!connectedDeviceList.length}}">
+      <text>{{isPKMode ? '结束PK' : '开始PK'}}</text>
+    </button>
+  </view>
+
+  <!-- 搜索设备弹窗 -->
+  <view class="search-modal" wx:if="{{showSearchModal}}">
+    <view class="modal-mask" bindtap="hideSearchModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">搜索设备</text>
+        <text class="modal-close" bindtap="hideSearchModal">×</text>
+      </view>
+      
+      <view class="device-list" wx:if="{{devices.length > 0}}">
+        <view class="device-item {{item.connecting ? 'connecting' : ''}}" 
+              wx:for="{{devices}}" 
+              wx:key="deviceId" 
+              bindtap="connectToDevice" 
+              data-device="{{item}}">
+          <view class="device-info">
+            <text class="device-name">{{item.name || '未知设备'}}</text>
+            <text class="device-id">ID: {{item.deviceId}}</text>
+          </view>
+          <view class="device-right">
+            <text class="rssi">信号: {{item.RSSI}} dBm</text>
+            <view class="connect-status" wx:if="{{item.connecting}}">
+              <view class="loading-dots">
+                <view class="dot"></view>
+                <view class="dot"></view>
+                <view class="dot"></view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="no-devices" wx:if="{{!devices.length}}">
+        <text>{{isSearching ? '正在搜索...' : '未发现设备'}}</text>
+      </view>
+
+      <view class="modal-footer">
+        <button class="search-btn {{isSearching ? 'searching' : ''}}" 
+                bindtap="startSearch" 
+                disabled="{{isSearching}}">
+          <view class="btn-content">
+            <view class="loading-icon" wx:if="{{isSearching}}"></view>
+            <text>{{isSearching ? '搜索中...' : '重新搜索'}}</text>
+          </view>
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

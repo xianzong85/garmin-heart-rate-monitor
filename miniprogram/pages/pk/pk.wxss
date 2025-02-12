@@ -1,0 +1,368 @@
+/* 容器 */
+.container {
+  padding: 30rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: #f5f7fa;
+}
+
+/* 状态区域 */
+.status {
+  text-align: center;
+  margin-bottom: 30rpx;
+  padding: 20rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.status-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin: 0 auto 16rpx;
+  border-radius: 50%;
+  border: 4rpx solid #409eff;
+  border-top-color: transparent;
+  display: none;
+}
+
+.status-icon.searching {
+  display: block;
+  animation: rotate 1s linear infinite;
+}
+
+.status-text {
+  font-size: 28rpx;
+  color: #606266;
+}
+
+.pk-timer {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: #409eff;
+}
+
+/* 已连接设备 */
+.connected-devices {
+  margin-bottom: 30rpx;
+}
+
+.device-panel {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.1);
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.device-panel:last-child {
+  margin-bottom: 0;
+}
+
+.device-panel.active {
+  border: 2rpx solid #67c23a;
+}
+
+.device-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.device-name {
+  font-size: 32rpx;
+  color: #303133;
+  font-weight: 500;
+}
+
+.device-status {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.heart-rate {
+  font-size: 40rpx;
+  color: #f56c6c;
+  font-weight: 500;
+}
+
+.heart-rate.pulse {
+  animation: pulse 1s infinite;
+}
+
+.unit {
+  font-size: 24rpx;
+  color: #909399;
+  font-weight: normal;
+}
+
+.rank {
+  font-size: 28rpx;
+  color: #e6a23c;
+  font-weight: 500;
+}
+
+.chart-container {
+  width: 100%;
+  height: 200rpx;
+  margin: 20rpx 0;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+}
+
+/* 按钮区域 */
+.button-group {
+  position: fixed;
+  left: 30rpx;
+  right: 30rpx;
+  bottom: 30rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+.add-btn, .pk-btn {
+  flex: 1;
+  height: 88rpx;
+  border: none;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-btn {
+  background: #409eff;
+}
+
+.add-btn:active {
+  opacity: 0.9;
+}
+
+.pk-btn {
+  background: #67c23a;
+}
+
+.pk-btn.pk-active {
+  background: #f56c6c;
+}
+
+.pk-btn:disabled {
+  background: #c0c4cc;
+  opacity: 0.6;
+}
+
+/* 搜索弹窗 */
+.search-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  position: absolute;
+  left: 30rpx;
+  right: 30rpx;
+  bottom: 30rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  color: #303133;
+  font-weight: 500;
+}
+
+.modal-close {
+  font-size: 40rpx;
+  color: #909399;
+  padding: 10rpx;
+}
+
+.device-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.device-item {
+  padding: 20rpx;
+  border-bottom: 2rpx solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.device-item:active {
+  background: #f5f7fa;
+}
+
+.device-item.connecting {
+  background: #f0f9ff;
+}
+
+.device-info {
+  flex: 1;
+}
+
+.device-name {
+  font-size: 28rpx;
+  color: #303133;
+  margin-bottom: 8rpx;
+}
+
+.device-id {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+.device-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.rssi {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+.connect-status {
+  margin-left: 16rpx;
+}
+
+.loading-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.dot {
+  width: 8rpx;
+  height: 8rpx;
+  background: #409eff;
+  border-radius: 50%;
+}
+
+.dot:nth-child(1) { animation: dot 1s infinite 0s; }
+.dot:nth-child(2) { animation: dot 1s infinite 0.2s; }
+.dot:nth-child(3) { animation: dot 1s infinite 0.4s; }
+
+.no-devices {
+  padding: 60rpx 0;
+  text-align: center;
+  color: #909399;
+  font-size: 28rpx;
+}
+
+.modal-footer {
+  margin-top: 30rpx;
+}
+
+.search-btn {
+  width: 100%;
+  height: 88rpx;
+  background: #409eff;
+  border: none;
+  border-radius: 44rpx;
+  color: #fff;
+  font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-btn:active {
+  opacity: 0.9;
+}
+
+.search-btn.searching {
+  opacity: 0.8;
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.loading-icon {
+  width: 32rpx;
+  height: 32rpx;
+  border: 3rpx solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: rotate 1s linear infinite;
+}
+
+/* 动画 */
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes dot {
+  0% { transform: scale(0.3); opacity: 0.3; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.3); opacity: 0.3; }
+}
+
+/* 断开连接按钮 */
+.device-footer {
+  margin-top: 20rpx;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.disconnect-btn {
+  font-size: 24rpx;
+  color: #f56c6c;
+  padding: 8rpx 20rpx;
+  border: 1rpx solid #f56c6c;
+  border-radius: 24rpx;
+  transition: all 0.3s;
+}
+
+.disconnect-btn:active {
+  background: #fff3f3;
+}

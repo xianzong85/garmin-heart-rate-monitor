@@ -1,167 +1,72 @@
 const app = getApp()
 const { WxChart } = require('../../utils/wxcharts.js');
-let lineChart = null;
+let charts = new Map(); // 存储每个设备的图表实例
 
 Page({
   data: {
-    connected: false,
-    statusText: '请点击搜索设备按钮',
-    heartRate: '--',
-    deviceId: '',
-    serviceId: '',
-    characteristicId: '',
-    heartRateData: [],
-    timeData: [],
+    devices: [],
     isSearching: false,
-    devices: [] // 存储搜索到的设备
+    statusText: '请连接设备'
   },
 
   onLoad: function () {
-    const that = this;
-    const systemInfo = wx.getWindowInfo();
-    const chartWidth = systemInfo.windowWidth * 0.9; // 90%的屏幕宽度
-    
-    // 延迟初始化图表，确保canvas已经渲染
-    setTimeout(() => {
-      lineChart = new WxChart({
-        canvasId: 'heartRateChart',
-        width: chartWidth,
-        height: 300,
-        yAxis: {
-          min: 0,
-          max: 200
-        }
-      });
-      
-      // 绘制初始空图表
-      lineChart.updateData({
-        categories: [],
-        series: [{
-          name: '心率',
-          data: []
-        }]
-      });
-    }, 300);
+    // 页面加载时自动开始搜索
+    this.startSearch();
   },
 
-  updateChart: function (heartRate) {
-    if (!lineChart) {
-      console.warn('图表未初始化');
-      return;
-    }
+  onShow: function () {
+    // 页面显示时开始搜索
+    this.startSearch();
+  },
 
-    const now = new Date();
-    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
-                  now.getMinutes().toString().padStart(2, '0') + ':' + 
-                  now.getSeconds().toString().padStart(2, '0');
-    
-    // 获取现有数据
-    const data = this.data.heartRateData;
-    const categories = this.data.timeData;
-    
-    // 添加新数据
-    categories.push(timeStr);
-    data.push(heartRate);
-    
-    // 保持最近30个数据点
-    if (categories.length > 30) {
-      categories.shift();
-      data.shift();
-    }
-    
-    // 更新图表
-    lineChart.updateData({
-      categories: categories,
-      series: [{
-        name: '心率',
-        data: data
-      }]
-    });
-    
-    // 保存数据
-    this.setData({
-      heartRateData: data,
-      timeData: categories
-    });
+  onHide: function () {
+    // 停止搜索
+    wx.stopBluetoothDevicesDiscovery();
   },
 
   startSearch: function () {
     const that = this;
-    
-    if (that.data.isSearching) {
-      console.log('已经在搜索中...');
-      return;
-    }
+    if (that.data.isSearching) return;
 
-    // 清空设备列表
     that.setData({
       isSearching: true,
-      statusText: '正在初始化蓝牙...',
-      devices: []
+      statusText: '正在搜索设备...'
     });
-    
-    // 初始化蓝牙模块
+
     wx.openBluetoothAdapter({
-      success: function (res) {
-        console.log('蓝牙初始化成功');
-        that.setData({
-          statusText: '正在搜索设备...'
-        });
-        
-        // 开始搜索设备
+      success: (res) => {
+        console.log('初始化蓝牙适配器成功');
         wx.startBluetoothDevicesDiscovery({
+          services: ['180D'],
           allowDuplicatesKey: false,
-          success: function (res) {
+          success: (res) => {
             console.log('开始搜索设备');
-            
-            // 设置搜索超时
-            setTimeout(() => {
-              if (that.data.isSearching) {
-                console.log('停止搜索');
-                wx.stopBluetoothDevicesDiscovery();
-                that.setData({
-                  statusText: '搜索完成，请选择设备',
-                  isSearching: false
-                });
-              }
-            }, 10000); // 10秒超时
-            
-            // 监听发现新设备事件
-            wx.onBluetoothDeviceFound(function (res) {
-              if (!that.data.isSearching) return;
-              
-              console.log('发现新设备:', res.devices);
-              const newDevices = res.devices;
-              
-              // 更新设备列表，避免重复
-              const existingDevices = that.data.devices;
-              const uniqueNewDevices = newDevices.filter(newDevice => {
-                return !existingDevices.some(existingDevice => 
-                  existingDevice.deviceId === newDevice.deviceId
-                );
+            wx.onBluetoothDeviceFound((res) => {
+              res.devices.forEach(device => {
+                // 检查是否已存在
+                const existingDevice = that.data.devices.find(d => d.deviceId === device.deviceId);
+                if (!existingDevice) {
+                  const devices = that.data.devices;
+                  devices.push(device);
+                  that.setData({ devices });
+                }
               });
-              
-              if (uniqueNewDevices.length > 0) {
-                that.setData({
-                  devices: existingDevices.concat(uniqueNewDevices)
-                });
-              }
             });
           },
-          fail: function (err) {
+          fail: (err) => {
             console.log('搜索设备失败:', err);
             that.setData({
-              statusText: '搜索设备失败: ' + (err.errMsg || '未知错误'),
-              isSearching: false
+              isSearching: false,
+              statusText: '搜索设备失败'
             });
           }
         });
       },
-      fail: function (err) {
-        console.log('蓝牙初始化失败:', err);
+      fail: (err) => {
+        console.log('初始化蓝牙适配器失败:', err);
         that.setData({
-          statusText: '初始化蓝牙失败，请确保蓝牙已开启',
-          isSearching: false
+          isSearching: false,
+          statusText: '请检查蓝牙是否开启'
         });
       }
     });
@@ -172,24 +77,31 @@ Page({
     const device = e.currentTarget.dataset.device;
     
     if (!device || !device.deviceId) {
-      console.log('无效的设备信息');
+      wx.showToast({
+        title: '无效的设备信息',
+        icon: 'none'
+      });
       return;
     }
 
-    wx.stopBluetoothDevicesDiscovery();
-    that.setData({
-      statusText: '正在连接到设备...',
-      isSearching: false
+    // 设置连接状态
+    const devices = that.data.devices.map(d => {
+      if (d.deviceId === device.deviceId) {
+        d.connecting = true;
+      }
+      return d;
     });
-    
+
+    that.setData({ devices });
+
+    // 停止搜索
+    wx.stopBluetoothDevicesDiscovery();
+
+    // 连接设备
     wx.createBLEConnection({
       deviceId: device.deviceId,
       success: function (res) {
-        console.log('连接设备成功');
-        that.setData({
-          deviceId: device.deviceId,
-          statusText: '正在获取服务...'
-        });
+        console.log('连接设备成功:', device.deviceId);
         
         // 获取服务
         wx.getBLEDeviceServices({
@@ -201,196 +113,91 @@ Page({
               if (service.uuid.toLowerCase().includes('180d')) {
                 console.log('找到心率服务:', service.uuid);
                 found = true;
-                that.setData({
-                  serviceId: service.uuid
+                
+                wx.showToast({
+                  title: '连接成功',
+                  icon: 'success',
+                  success: () => {
+                    // 跳转到PK页面
+                    wx.navigateTo({
+                      url: '/pages/pk/pk',
+                      success: function(res) {
+                        // 传递设备信息
+                        res.eventChannel.emit('acceptDeviceData', { 
+                          device: {
+                            deviceId: device.deviceId,
+                            name: device.name || '未知设备',
+                            heartRate: null,
+                            heartRateData: [],
+                            timeData: [],
+                            rank: 0,
+                            serviceId: service.uuid
+                          }
+                        });
+                      }
+                    });
+                  }
                 });
-                that.getCharacteristics(device.deviceId, service.uuid);
                 break;
               }
             }
             if (!found) {
               console.log('未找到心率服务');
-              that.setData({
-                statusText: '设备不支持心率服务',
-                isSearching: false
+              wx.showModal({
+                title: '连接失败',
+                content: '未找到心率服务，请确保设备支持心率功能',
+                showCancel: false,
+                success: () => {
+                  that.disconnectDevice(device.deviceId);
+                }
               });
-              that.disconnectDevice();
             }
           },
           fail: function (err) {
             console.log('获取服务失败:', err);
-            that.setData({
-              statusText: '获取服务失败',
-              isSearching: false
+            wx.showModal({
+              title: '连接失败',
+              content: '获取设备服务失败，请重试',
+              showCancel: false,
+              success: () => {
+                that.disconnectDevice(device.deviceId);
+              }
             });
-            that.disconnectDevice();
           }
         });
       },
       fail: function (err) {
         console.log('连接设备失败:', err);
-        that.setData({
-          statusText: '连接设备失败',
-          isSearching: false
-        });
-      }
-    });
-  },
-
-  getCharacteristics: function (deviceId, serviceId) {
-    const that = this;
-    
-    wx.getBLEDeviceCharacteristics({
-      deviceId: deviceId,
-      serviceId: serviceId,
-      success: function (res) {
-        console.log('获取特征值列表:', res.characteristics);
-        let found = false;
-        for (let characteristic of res.characteristics) {
-          if (characteristic.uuid.toLowerCase().includes('2a37')) {
-            console.log('找到心率特征值:', characteristic.uuid);
-            found = true;
-            that.setData({
-              characteristicId: characteristic.uuid
-            });
-            that.notifyHeartRate();
-            break;
-          }
-        }
-        if (!found) {
-          console.log('未找到心率特征值');
-          that.setData({
-            statusText: '设备不支持心率特征值',
-            isSearching: false
-          });
-          that.disconnectDevice();
-        }
-      },
-      fail: function (err) {
-        console.log('获取特征值失败:', err);
-        that.setData({
-          statusText: '获取特征值失败',
-          isSearching: false
-        });
-        that.disconnectDevice();
-      }
-    });
-  },
-
-  notifyHeartRate: function () {
-    const that = this;
-    
-    wx.notifyBLECharacteristicValueChange({
-      deviceId: that.data.deviceId,
-      serviceId: that.data.serviceId,
-      characteristicId: that.data.characteristicId,
-      state: true,
-      success: function (res) {
-        console.log('启用心率通知成功');
-        that.setData({
-          connected: true,
-          statusText: '设备已连接',
-          isSearching: false
+        wx.showToast({
+          title: '连接失败',
+          icon: 'error'
         });
         
-        // 监听心率数据
-        wx.onBLECharacteristicValueChange(function (res) {
-          console.log('收到心率数据通知:', res);
-          
-          // 将ArrayBuffer转换为Uint8Array
-          const value = new Uint8Array(res.value);
-          console.log('心率数据内容:', Array.from(value));
-          
-          // 心率数据格式解析 (标准蓝牙心率服务格式)
-          // 第一个字节是标志位，表示数据格式
-          // 第二个字节开始是心率值
-          const flags = value[0];
-          console.log('心率数据标志位:', flags.toString(2));
-          
-          let heartRate;
-          if ((flags & 0x01) === 0) {
-            // 8位心率值
-            heartRate = value[1];
-          } else {
-            // 16位心率值
-            heartRate = (value[2] << 8) + value[1];
+        // 清除连接状态
+        const devices = that.data.devices.map(d => {
+          if (d.deviceId === device.deviceId) {
+            d.connecting = false;
           }
-          
-          console.log('解析后的心率值:', heartRate);
-          
-          if (heartRate > 0 && heartRate < 255) {
-            that.setData({
-              heartRate: heartRate,
-              statusText: '心率: ' + heartRate + ' BPM'
-            });
-            
-            // 更新图表
-            const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
-                          now.getMinutes().toString().padStart(2, '0') + ':' + 
-                          now.getSeconds().toString().padStart(2, '0');
-            
-            that.data.heartRateData.push(heartRate);
-            that.data.timeData.push(timeStr);
-            
-            // 保持最近30个数据点
-            if (that.data.heartRateData.length > 30) {
-              that.data.heartRateData.shift();
-              that.data.timeData.shift();
-            }
-            
-            that.updateChart(heartRate);
-          } else {
-            console.warn('收到无效的心率值:', heartRate);
-          }
+          return d;
         });
-      },
-      fail: function (err) {
-        console.error('启用心率通知失败:', err);
+        
         that.setData({
-          statusText: '启用心率通知失败',
-          isSearching: false
+          devices,
+          statusText: '连接设备失败'
         });
-        that.disconnectDevice();
       }
     });
   },
 
-  disconnectDevice: function () {
-    const that = this;
-    
-    if (that.data.deviceId) {
-      wx.closeBLEConnection({
-        deviceId: that.data.deviceId,
-        success: function (res) {
-          console.log('断开设备连接');
-          that.setData({
-            connected: false,
-            statusText: '设备已断开连接',
-            heartRate: '--',
-            deviceId: '',
-            serviceId: '',
-            characteristicId: '',
-            heartRateData: [],
-            timeData: [],
-            isSearching: false
-          });
-          
-          // 重置图表
-          lineChart.updateData({
-            categories: [],
-            series: [{
-              name: '心率',
-              data: []
-            }]
-          });
-        }
-      });
-    }
-  },
-
-  onUnload: function () {
-    this.disconnectDevice();
-    wx.closeBluetoothAdapter();
+  disconnectDevice: function (deviceId) {
+    wx.closeBLEConnection({
+      deviceId: deviceId,
+      success: function (res) {
+        console.log('断开设备连接成功:', deviceId);
+      },
+      fail: function (err) {
+        console.log('断开设备连接失败:', err);
+      }
+    });
   }
 });
