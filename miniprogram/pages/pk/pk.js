@@ -3,37 +3,99 @@ Page({
     connectedDeviceList: [],
     isPKMode: false,
     pkDuration: 180, // 3分钟
+    pkStartTime: null,
+    pkEndTime: null,
     pkTimeLeft: 180,
     pkTimer: null,
-    pkStartTime: null,
-    isSearching: false,
-    devices: [],
-    statusText: '已连接1台设备',
-    showSearchModal: false
+    statusText: '请连接设备',
+    showSearchModal: false,
+    // 添加心率监听状态
+    lastHeartRateTime: {},  // 记录每个设备最后一次收到心率的时间
+    heartRateCheckTimer: null,  // 心率检查定时器
   },
 
   onLoad: function (options) {
     const that = this;
-    const eventChannel = this.getOpenerEventChannel();
-    eventChannel.on('acceptDeviceData', (data) => {
-      that.setData({
-        connectedDeviceList: [data.device],
-        statusText: '已连接1台设备'
-      });
-      
-      // 初始化图表
-      that.initChart(data.device.deviceId);
+    if (options.device) {
+      try {
+        const deviceData = JSON.parse(options.device);
+        const device = {
+          ...deviceData,
+          heartRate: null,
+          heartRateData: [],
+          timeData: [],
+          rank: 0
+        };
+        
+        that.setData({
+          connectedDeviceList: [device],
+          statusText: '已连接1台设备'
+        });
+        
+        // 初始化图表
+        that.initChart(device.deviceId);
 
-      // 获取心率特征值
-      that.getCharacteristics(data.device.deviceId, data.device.serviceId);
-    });
+        // 启动心率检查
+        that.startHeartRateCheck();
+
+        // 获取心率特征值
+        wx.getBLEDeviceCharacteristics({
+          deviceId: device.deviceId,
+          serviceId: device.serviceId,
+          success: function (res) {
+            console.log('获取特征值列表:', res.characteristics);
+            for (let characteristic of res.characteristics) {
+              if (characteristic.uuid.toLowerCase().includes('2a37')) {
+                console.log('找到心率特征值:', characteristic.uuid);
+                that.startHeartRateNotification(device.deviceId, device.serviceId, characteristic.uuid);
+                break;
+              }
+            }
+          },
+          fail: function (err) {
+            console.log('获取特征值失败:', err);
+          }
+        });
+      } catch (e) {
+        console.error('解析设备数据失败:', e);
+        wx.showToast({
+          title: '获取设备数据失败',
+          icon: 'none'
+        });
+      }
+    } else {
+      console.error('未接收到设备数据');
+      wx.showToast({
+        title: '未接收到设备数据',
+        icon: 'none'
+      });
+    }
   },
 
   onShow: function () {
     // 恢复监听
     if (this.data.connectedDeviceList.length > 0) {
       this.data.connectedDeviceList.forEach(device => {
-        this.startHeartRateNotification(device.deviceId);
+        if (device.serviceId) {  
+          // 重新获取特征值
+          wx.getBLEDeviceCharacteristics({
+            deviceId: device.deviceId,
+            serviceId: device.serviceId,
+            success: (res) => {
+              console.log('重新获取特征值列表:', res.characteristics);
+              for (let characteristic of res.characteristics) {
+                if (characteristic.uuid.toLowerCase().includes('2a37')) {
+                  console.log('重新找到心率特征值:', characteristic.uuid);
+                  this.startHeartRateNotification(device.deviceId, device.serviceId, characteristic.uuid);
+                  break;
+                }
+              }
+            },
+            fail: (err) => {
+              console.log('重新获取特征值失败:', err);
+            }
+          });
+        }
       });
     }
   },
@@ -48,6 +110,11 @@ Page({
   },
 
   onUnload: function () {
+    // 清除心率检查定时器
+    if (this.data.heartRateCheckTimer) {
+      clearInterval(this.data.heartRateCheckTimer);
+    }
+    
     // 断开所有连接
     if (this.data.connectedDeviceList.length > 0) {
       this.data.connectedDeviceList.forEach(device => {
@@ -253,7 +320,7 @@ Page({
         });
       }
     });
-  },
+  },    
 
   disconnectDevice: function (e) {
     const that = this;
@@ -338,6 +405,9 @@ Page({
   },
 
   processHeartRateData: function (deviceId, heartRate) {
+    // 更新最后收到心率的时间
+    this.data.lastHeartRateTime[deviceId] = Date.now();
+    
     const that = this;
     const connectedDeviceList = that.data.connectedDeviceList.map(device => {
       if (device.deviceId === deviceId) {
@@ -512,6 +582,94 @@ Page({
     
     that.setData({
       connectedDeviceList: devices
+    });
+  },
+
+  // 添加心率检查函数
+  startHeartRateCheck: function() {
+    // 每10秒检查一次心率数据
+    this.data.heartRateCheckTimer = setInterval(() => {
+      const now = Date.now();
+      this.data.connectedDeviceList.forEach(device => {
+        const lastTime = this.data.lastHeartRateTime[device.deviceId] || 0;
+        // 如果超过15秒没有收到心率数据，尝试重新连接
+        if (now - lastTime > 15000) {
+          console.log('心率数据超时，尝试重新连接:', device.deviceId);
+          this.reconnectHeartRate(device);
+        }
+      });
+    }, 10000);
+  },
+
+  // 添加重连函数
+  reconnectHeartRate: function(device) {
+    console.log('开始重连设备:', device.deviceId);
+    
+    // 先断开连接
+    wx.closeBLEConnection({
+      deviceId: device.deviceId,
+      success: () => {
+        console.log('断开连接成功，准备重连');
+        // 重新连接
+        wx.createBLEConnection({
+          deviceId: device.deviceId,
+          success: () => {
+            console.log('重新连接成功');
+            // 重新获取服务
+            wx.getBLEDeviceServices({
+              deviceId: device.deviceId,
+              success: (res) => {
+                console.log('重新获取服务列表:', res.services);
+                // 查找心率服务
+                for (let service of res.services) {
+                  if (service.uuid.toLowerCase().includes('180d')) {
+                    console.log('重新找到心率服务:', service.uuid);
+                    // 获取特征值
+                    wx.getBLEDeviceCharacteristics({
+                      deviceId: device.deviceId,
+                      serviceId: service.uuid,
+                      success: (res) => {
+                        console.log('重新获取特征值列表:', res.characteristics);
+                        for (let characteristic of res.characteristics) {
+                          if (characteristic.uuid.toLowerCase().includes('2a37')) {
+                            console.log('重新找到心率特征值:', characteristic.uuid);
+                            // 保存新的serviceId和characteristicId
+                            const connectedDeviceList = this.data.connectedDeviceList.map(d => {
+                              if (d.deviceId === device.deviceId) {
+                                d.serviceId = service.uuid;
+                                d.characteristicId = characteristic.uuid;
+                              }
+                              return d;
+                            });
+                            this.setData({ connectedDeviceList });
+                            
+                            // 开启通知
+                            this.startHeartRateNotification(device.deviceId, service.uuid, characteristic.uuid);
+                            break;
+                          }
+                        }
+                      },
+                      fail: (err) => {
+                        console.log('重新获取特征值失败:', err);
+                      }
+                    });
+                    break;
+                  }
+                }
+              },
+              fail: (err) => {
+                console.log('重新获取服务失败:', err);
+              }
+            });
+          },
+          fail: (err) => {
+            console.log('重新连接失败:', err);
+          }
+        });
+      },
+      fail: (err) => {
+        console.log('断开连接失败:', err);
+      }
     });
   }
 });

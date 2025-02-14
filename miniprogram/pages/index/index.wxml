@@ -24,6 +24,7 @@
       <view class="device-info">
         <text class="device-name">{{device.name || '未知设备'}}</text>
         <text class="device-id">ID: {{device.deviceId}}</text>
+        <text class="heart-rate-status" wx:if="{{device.hasHeartRate}}">✓ 已开启心率推送</text>
       </view>
       <text class="rssi">信号: {{device.RSSI}} dBm</text>
     </view>
