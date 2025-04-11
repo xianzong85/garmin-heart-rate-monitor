@@ -1,8 +1,157 @@
 /* 全局样式 */
 .container {
-  padding: 30rpx;
-  background: #f5f7fa;
+  padding: 20rpx;
   min-height: 100vh;
+  background: #f5f6fa;
+}
+
+/* 顶部状态栏 */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.status-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.search-btn {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 24rpx;
+  background: #007AFF;
+  border-radius: 30rpx;
+  color: #fff;
+  font-size: 26rpx;
+  transition: all 0.3s;
+}
+
+.search-btn.searching {
+  background: #999;
+}
+
+.search-btn .iconfont {
+  margin-right: 8rpx;
+  font-size: 28rpx;
+}
+
+/* 设备列表 */
+.device-list {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.device-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: all 0.3s;
+}
+
+.device-item:last-child {
+  border-bottom: none;
+}
+
+.device-item:active {
+  background: #f9f9f9;
+}
+
+.device-info {
+  flex: 1;
+}
+
+.device-name {
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.device-id {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.device-status {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+}
+
+.status-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  margin-right: 8rpx;
+}
+
+.device-status.DISCONNECTED .status-dot {
+  background: #999;
+}
+
+.device-status.CONNECTING .status-dot {
+  background: #FFA500;
+  animation: pulse 1.5s infinite;
+}
+
+.device-status.CONNECTED .status-dot {
+  background: #4CD964;
+}
+
+.device-status.ERROR .status-dot {
+  background: #FF3B30;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 0;
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.empty-tip {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 动画 */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* 提示区域 */
@@ -49,75 +198,6 @@
   font-size: 36rpx;
 }
 
-/* 设备列表 */
-.device-list {
-  background: #fff;
-  border-radius: 16rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
-  overflow: hidden;
-}
-
-.device-list-header {
-  padding: 24rpx 30rpx;
-  background: #f8f9fa;
-  border-bottom: 2rpx solid #eee;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.device-count {
-  color: #909399;
-  margin-left: 10rpx;
-  font-size: 24rpx;
-}
-
-.device-item {
-  padding: 24rpx 30rpx;
-  border-bottom: 2rpx solid #f5f5f5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.3s;
-}
-
-.device-item:active {
-  background-color: #f5f7fa;
-}
-
-.device-item.connecting {
-  background: #f0f9ff;
-}
-
-.device-info {
-  flex: 1;
-}
-
-.device-name {
-  font-size: 32rpx;
-  color: #333;
-  font-weight: 500;
-}
-
-.device-id {
-  font-size: 24rpx;
-  color: #909399;
-  margin-top: 8rpx;
-}
-
-.rssi {
-  font-size: 24rpx;
-  color: #909399;
-  background: #f5f7fa;
-  padding: 6rpx 16rpx;
-  border-radius: 20rpx;
-}
-
-.connect-status {
-  margin-left: 16rpx;
-}
-
 .device-right {
   display: flex;
   align-items: center;
@@ -151,10 +231,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24rpx;
-}
-
-.device-status {
-  text-align: right;
 }
 
 .heart-rate {
@@ -223,31 +299,6 @@
   display: flex;
   justify-content: center;
   gap: 20rpx;
-}
-
-.search-btn {
-  flex: 1;
-  height: 88rpx;
-  line-height: 88rpx;
-  background: #409eff;
-  color: #fff;
-  font-size: 32rpx;
-  font-weight: 500;
-  border-radius: 44rpx;
-  transition: all 0.3s;
-}
-
-.search-btn:active {
-  opacity: 0.9;
-}
-
-.search-btn[disabled] {
-  background: #a0cfff;
-  opacity: 1;
-}
-
-.search-btn.searching {
-  opacity: 0.9;
 }
 
 .pk-btn {
@@ -374,4 +425,256 @@
 .header-left, .header-right {
   display: flex;
   align-items: center;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  padding: 4rpx 12rpx;
+  border-radius: 16rpx;
+  margin-left: 16rpx;
+}
+
+.status-indicator.disconnected {
+  background: rgba(144, 147, 153, 0.1);
+}
+
+.status-indicator.connecting {
+  background: rgba(255, 164, 0, 0.1);
+}
+
+.status-indicator.connected {
+  background: rgba(39, 194, 129, 0.1);
+}
+
+.status-indicator.reconnecting {
+  background: rgba(255, 164, 0, 0.1);
+}
+
+.status-indicator.error {
+  background: rgba(255, 71, 87, 0.1);
+}
+
+.status-text {
+  font-size: 24rpx;
+  color: #606266;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* 电量指示器 */
+.battery-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-right: 16rpx;
+}
+
+.battery-icon {
+  width: 40rpx;
+  height: 20rpx;
+  border: 2rpx solid #909399;
+  border-radius: 4rpx;
+  padding: 2rpx;
+  position: relative;
+}
+
+.battery-icon:after {
+  content: '';
+  position: absolute;
+  right: -6rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4rpx;
+  height: 10rpx;
+  background: #909399;
+  border-radius: 0 2rpx 2rpx 0;
+}
+
+.battery-level {
+  height: 100%;
+  background: #67c23a;
+  border-radius: 2rpx;
+}
+
+.battery-level[style*="width: 20%"],
+.battery-level[style*="width: 1"],
+.battery-level[style*="width: 2"],
+.battery-level[style*="width: 3"],
+.battery-level[style*="width: 4"],
+.battery-level[style*="width: 5"],
+.battery-level[style*="width: 6"],
+.battery-level[style*="width: 7"],
+.battery-level[style*="width: 8"],
+.battery-level[style*="width: 9%"] {
+  background: #f56c6c;
+}
+
+.battery-text {
+  font-size: 24rpx;
+  color: #909399;
+}
+
+/* 使用说明卡片 */
+.guide-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.guide-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.guide-header .iconfont {
+  font-size: 36rpx;
+  color: #007AFF;
+  margin-right: 12rpx;
+}
+
+.guide-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.guide-step {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.step-number {
+  width: 40rpx;
+  height: 40rpx;
+  background: #007AFF;
+  color: #fff;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.step-text {
+  font-size: 28rpx;
+  color: #666;
+  flex: 1;
+}
+
+/* 状态显示卡片 */
+.status-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.status-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.status-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background: #f0f7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-icon .iconfont {
+  font-size: 48rpx;
+  color: #007AFF;
+}
+
+.status-icon.searching .iconfont {
+  animation: rotate 1s linear infinite;
+}
+
+.status-text {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 加载动画点 */
+.loading-dots {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.dot {
+  width: 12rpx;
+  height: 12rpx;
+  background: #007AFF;
+  border-radius: 50%;
+  animation: dot 1.4s infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* PK计时器 */
+.pk-timer {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid #f5f5f5;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12rpx;
+}
+
+.timer-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.timer-value {
+  font-size: 48rpx;
+  color: #f56c6c;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+.timer-unit {
+  font-size: 24rpx;
+  color: #999;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dot {
+  0%, 80%, 100% { transform: scale(0.3); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
 }

@@ -1,93 +1,223 @@
-<view class="container">
-  <!-- 状态区域 -->
-  <view class="status">
-    <view class="status-icon {{isSearching ? 'searching' : ''}}"></view>
-    <text class="status-text">{{statusText}}</text>
-    <block wx:if="{{isPKMode}}">
-      <text class="pk-timer">剩余时间: {{pkTimeLeft}}秒</text>
-    </block>
+<view class="pk-container {{isLandscape ? 'landscape' : ''}}">
+  <view class="pk-header">
+    <view class="pk-timer-container" wx:if="{{isPKMode}}">
+      <view class="pk-timer">
+        <text class="timer-label">倒计时</text>
+        <text class="timer-value">{{pkTimeLeft}}</text>
+        <text class="timer-unit">秒</text>
+      </view>
+      <view class="timer-progress-bar">
+        <view class="timer-progress" style="width: {{(pkTimeLeft/pkDuration)*100}}%"></view>
+      </view>
+    </view>
+    <view class="pk-controls">
+      <button class="control-btn {{isPKMode ? 'active' : ''}}" bindtap="togglePK">
+        <text class="btn-icon {{isPKMode ? 'icon-stop' : 'icon-play'}}"></text>
+        <text>{{isPKMode ? '结束PK' : '开始PK'}}</text>
+      </button>
+      <button class="control-btn add-device" bindtap="showSearchDevices">
+        <text class="btn-icon icon-add"></text>
+        <text>添加设备</text>
+      </button>
+      <button class="control-btn orientation" bindtap="toggleOrientation">
+        <text class="btn-icon {{isLandscape ? 'icon-portrait' : 'icon-landscape'}}"></text>
+        <text>{{isLandscape ? '竖屏' : '横屏'}}</text>
+      </button>
+    </view>
   </view>
 
-  <!-- 已连接设备 -->
-  <view class="connected-devices">
-    <view class="device-panel {{item.heartRate ? 'active' : ''}}" 
-          wx:for="{{connectedDeviceList}}" 
-          wx:key="deviceId">
-      <view class="device-header">
-        <text class="device-name">{{item.name}}</text>
-        <view class="device-status">
-          <text class="heart-rate {{item.heartRate ? 'pulse' : ''}}">
-            {{item.heartRate || '--'}} <text class="unit">BPM</text>
-          </text>
-          <text wx:if="{{isPKMode}}" class="rank">第{{item.rank}}名</text>
+  <view class="pk-main">
+    <!-- 设备列表部分 - 始终显示 -->
+    <view class="device-status">
+      <view class="device-card {{item.isLeading ? 'leading' : ''}} {{isPKMode && item.rank === 1 ? 'first-place' : ''}} {{isPKMode && item.rank === 2 ? 'second-place' : ''}} {{isPKMode && item.rank === 3 ? 'third-place' : ''}}"
+            wx:for="{{connectedDeviceList}}"
+            wx:key="deviceId">
+        <view class="device-header">
+          <view class="device-info">
+            <view class="device-name">{{item.name}}</view>
+            <view class="connection-status {{item.isConnected ? 'connected' : 'disconnected'}}">
+              <view class="status-dot"></view>
+              <text>{{item.isConnected ? '已连接' : '已断开'}}</text>
+            </view>
+          </view>
+          <view class="device-rank" wx:if="{{isPKMode}}">
+            <view class="rank-badge rank-{{item.rank}}">
+              <text>{{item.rank}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="heart-rate {{item.isWorn && !isPKMode ? 'pulse-animation' : ''}}">
+          <view class="heart-icon {{item.isWorn ? 'beating' : 'inactive'}}">
+            <text class="icon-heart"></text>
+          </view>
+          <view class="heart-rate-display">
+            <block wx:if="{{item.isWorn === false}}">
+              <text class="heart-rate-value not-worn">未佩戴</text>
+              <text wx:if="{{item.unwornDuration}}" class="heart-rate-duration">{{item.unwornDuration}}秒</text>
+            </block>
+            <block wx:else>
+              <text class="heart-rate-value">{{item.heartRate || '--'}}</text>
+              <text class="heart-rate-unit">BPM</text>
+            </block>
+          </view>
+        </view>
+
+        <!-- 心率统计数据 -->
+        <view class="stats" wx:if="{{(item.maxHeartRate && item.isWorn !== false) || item.historicalMaxHeartRate}}">
+          <view class="stat-item">
+            <text class="stat-label">最高</text>
+            <text class="stat-value">{{item.isWorn !== false && item.maxHeartRate ? item.maxHeartRate : (item.historicalMaxHeartRate || '--')}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">最低</text>
+            <text class="stat-value">{{item.isWorn !== false && item.minHeartRate ? item.minHeartRate : (item.historicalMinHeartRate || '--')}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">平均</text>
+            <text class="stat-value">{{item.isWorn !== false && item.avgHeartRate ? item.avgHeartRate : (item.historicalAvgHeartRate ? item.historicalAvgHeartRate.toFixed(1) : '--')}}</text>
+          </view>
         </view>
       </view>
-      <view class="chart-container">
-        <canvas type="2d" id="heartRateChart_{{item.deviceId}}" class="chart"></canvas>
+
+      <!-- 空状态提示 -->
+      <view class="empty-devices" wx:if="{{connectedDeviceList.length === 0}}">
+        <view class="empty-icon">📱</view>
+        <text class="empty-text">暂无已连接设备</text>
+        <text class="empty-subtext">点击“添加设备”按钮连接设备</text>
       </view>
-      <view class="device-footer">
-        <text class="disconnect-btn" bindtap="disconnectDevice" data-device-id="{{item.deviceId}}">断开连接</text>
+    </view>
+
+    <!-- 心率图表部分 - 仅在PK模式下显示 -->
+    <view class="chart-section" wx:if="{{isPKMode}}">
+      <view class="chart-header">
+        <text class="chart-title">实时心率</text>
+        <view class="chart-legend" wx:if="{{connectedDeviceList.length > 0}}">
+          <view class="legend-item" wx:for="{{connectedDeviceList}}" wx:key="deviceId">
+            <view class="legend-color" style="background-color: {{item.lineColor}}"></view>
+            <text class="legend-name">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="canvas-container">
+        <canvas canvas-id="pkChart" class="pk-chart"></canvas>
+      </view>
+      <view class="chart-fallback" wx:if="{{!chartRendered}}">
+        <view class="device-line" wx:for="{{connectedDeviceList}}" wx:key="deviceId" style="color: {{item.isWorn === false ? '#909399' : item.lineColor}}">
+          <text>{{item.name}}:
+            <block wx:if="{{item.isWorn === false}}">未佩戴</block>
+            <block wx:else>{{item.heartRate || '--'}} BPM</block>
+          </text>
+        </view>
       </view>
     </view>
   </view>
 
-  <!-- 按钮区域 -->
-  <view class="button-group">
-    <button class="add-btn" bindtap="showSearchDevices">
-      <text>添加设备</text>
-    </button>
-    <button class="pk-btn {{isPKMode ? 'pk-active' : ''}}" 
-            bindtap="startPK" 
-            disabled="{{!connectedDeviceList.length}}">
-      <text>{{isPKMode ? '结束PK' : '开始PK'}}</text>
-    </button>
-  </view>
-
   <!-- 搜索设备弹窗 -->
-  <view class="search-modal" wx:if="{{showSearchModal}}">
+  <view class="search-modal {{showSearchModal ? 'visible' : ''}}">
     <view class="modal-mask" bindtap="hideSearchModal"></view>
     <view class="modal-content">
       <view class="modal-header">
-        <text class="modal-title">搜索设备</text>
-        <text class="modal-close" bindtap="hideSearchModal">×</text>
+        <view class="modal-title">搜索设备</view>
+        <view class="modal-close" bindtap="hideSearchModal">×</view>
       </view>
-      
-      <view class="device-list" wx:if="{{devices.length > 0}}">
-        <view class="device-item {{item.connecting ? 'connecting' : ''}}" 
-              wx:for="{{devices}}" 
-              wx:key="deviceId" 
-              bindtap="connectToDevice" 
-              data-device="{{item}}">
-          <view class="device-info">
-            <text class="device-name">{{item.name || '未知设备'}}</text>
-            <text class="device-id">ID: {{item.deviceId}}</text>
-          </view>
-          <view class="device-right">
-            <text class="rssi">信号: {{item.RSSI}} dBm</text>
-            <view class="connect-status" wx:if="{{item.connecting}}">
-              <view class="loading-dots">
-                <view class="dot"></view>
-                <view class="dot"></view>
-                <view class="dot"></view>
-              </view>
+
+      <view class="status-card {{isSearching ? 'searching' : ''}}">
+        <view class="status-content">
+          <view class="status-icon">
+            <view class="bluetooth-icon {{isSearching ? 'pulse' : ''}}">
+              <text class="icon-bluetooth"></text>
+            </view>
+            <view class="search-waves" wx:if="{{isSearching}}">
+              <view class="wave wave1"></view>
+              <view class="wave wave2"></view>
+              <view class="wave wave3"></view>
             </view>
           </view>
+          <text class="status-text">{{statusText}}</text>
         </view>
       </view>
 
-      <view class="no-devices" wx:if="{{!devices.length}}">
-        <text>{{isSearching ? '正在搜索...' : '未发现设备'}}</text>
+      <view class="device-list">
+        <block wx:if="{{devices.length > 0}}">
+          <view class="device-item {{item.connectionState === 'connecting' ? 'connecting' : ''}}"
+                wx:for="{{devices}}"
+                wx:key="deviceId"
+                bindtap="connectToDevice"
+                data-device="{{item}}">
+            <view class="device-info">
+              <view class="device-name">{{item.name || '未知设备'}}</view>
+              <view class="device-id">{{item.deviceId}}</view>
+            </view>
+            <view class="device-status {{item.connectionState}}">
+              <view class="status-indicator">
+                <text class="status-dot"></text>
+                <text>{{item.statusText}}</text>
+              </view>
+              <view class="connect-arrow" wx:if="{{item.connectionState !== 'connected'}}">→</view>
+            </view>
+          </view>
+        </block>
+        <view class="empty-state" wx:else>
+          <view class="empty-icon-container">
+            <text class="empty-icon icon-bluetooth-off"></text>
+          </view>
+          <text class="empty-text">未发现设备</text>
+          <text class="empty-tip">请确保设备已开启并在范围内</text>
+        </view>
       </view>
 
       <view class="modal-footer">
-        <button class="search-btn {{isSearching ? 'searching' : ''}}" 
-                bindtap="startSearch" 
-                disabled="{{isSearching}}">
+        <button class="search-btn {{isSearching ? 'searching' : ''}}" bindtap="startSearch">
           <view class="btn-content">
-            <view class="loading-icon" wx:if="{{isSearching}}"></view>
+            <text class="btn-icon icon-search"></text>
             <text>{{isSearching ? '搜索中...' : '重新搜索'}}</text>
           </view>
         </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- PK结果弹窗 -->
+  <view class="pk-result-modal" wx:if="{{showPKResult}}">
+    <view class="modal-mask" bindtap="hidePKResult"></view>
+    <view class="result-content">
+      <view class="result-header">
+        <text class="result-title">PK结果</text>
+        <view class="modal-close" bindtap="hidePKResult">×</view>
+      </view>
+
+      <view class="result-podium">
+        <view class="podium-item second" wx:if="{{pkResults.length > 1}}">
+          <view class="podium-avatar">2</view>
+          <view class="podium-name">{{pkResults[1].name}}</view>
+          <view class="podium-value">{{pkResults[1].heartRate || '--'}} BPM</view>
+        </view>
+
+        <view class="podium-item first" wx:if="{{pkResults.length > 0}}">
+          <view class="podium-crown">👑</view>
+          <view class="podium-avatar">1</view>
+          <view class="podium-name">{{pkResults[0].name}}</view>
+          <view class="podium-value">{{pkResults[0].heartRate || '--'}} BPM</view>
+        </view>
+
+        <view class="podium-item third" wx:if="{{pkResults.length > 2}}">
+          <view class="podium-avatar">3</view>
+          <view class="podium-name">{{pkResults[2].name}}</view>
+          <view class="podium-value">{{pkResults[2].heartRate || '--'}} BPM</view>
+        </view>
+      </view>
+
+      <view class="result-list">
+        <view class="result-item" wx:for="{{pkResults}}" wx:key="deviceId" wx:if="{{index > 2}}">
+          <view class="result-rank">{{index + 1}}</view>
+          <view class="result-name">{{item.name}}</view>
+          <view class="result-value">{{item.heartRate || '--'}} BPM</view>
+        </view>
+      </view>
+
+      <view class="result-footer">
+        <button class="result-btn" bindtap="hidePKResult">确定</button>
       </view>
     </view>
   </view>
