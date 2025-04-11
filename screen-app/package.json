@@ -1,0 +1,12 @@
+{
+  "name": "heartrate-pk-screen",
+  "version": "1.0.0",
+  "description": "心率PK大屏幕应用",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.13.0"
+  }
+}
