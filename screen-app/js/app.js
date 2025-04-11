@@ -125,18 +125,26 @@ function initChart() {
 // 连接到WebSocket服务器
 function connectToServer() {
     // 实际使用时，这里应该是你的WebSocket服务器地址
-    const serverUrl = 'ws://192.168.1.125:3000';
+    const serverUrl = 'ws://192.168.1.125:3000'; // 开发环境使用ws://
+    // const serverUrl = 'wss://192.168.1.125:3000'; // 正式环境使用wss://
 
     // 连接WebSocket服务器
     socket = new WebSocket(serverUrl);
 
-    socket.onopen = function() {
-        console.log('WebSocket连接已建立');
+    socket.onopen = function(event) {
+        console.log('WebSocket连接已建立', event);
 
         // 发送加入房间消息
         sendMessage({
             type: 'join',
             roomId: roomId
+        });
+
+        // 发送测试消息
+        sendMessage({
+            type: 'test',
+            message: '测试消息从大屏端发送',
+            timestamp: Date.now()
         });
     };
 
@@ -154,6 +162,21 @@ function connectToServer() {
 
     socket.onerror = function(error) {
         console.error('WebSocket错误:', error);
+        console.error('WebSocket错误详情:', JSON.stringify(error));
+
+        // 显示错误提示
+        const errorContainer = document.createElement('div');
+        errorContainer.className = 'error-message';
+        errorContainer.innerHTML = `
+            <div class="error-title">WebSocket连接错误</div>
+            <div class="error-details">请检查网络连接和服务器状态</div>
+        `;
+        document.body.appendChild(errorContainer);
+
+        // 3秒后移除错误提示
+        setTimeout(() => {
+            document.body.removeChild(errorContainer);
+        }, 3000);
     };
 
     // 如果需要模拟数据，可以取消下面的注释

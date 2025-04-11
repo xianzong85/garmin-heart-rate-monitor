@@ -1345,7 +1345,10 @@ Page({
     }
 
     // 连接WebSocket
-    const wsUrl = 'ws://192.168.1.125:3000'; // 使用本机IP地址代替localhost
+    // 注意：微信小程序正式环境必须使用wss://协议
+    // 开发环境可以关闭域名校验使用ws://
+    const wsUrl = 'ws://192.168.1.125:3000'; // 开发环境使用ws://
+    // const wsUrl = 'wss://192.168.1.125:3000'; // 正式环境使用wss://
 
     wx.showLoading({
       title: '正在连接...'

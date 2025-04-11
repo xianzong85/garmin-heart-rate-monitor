@@ -75,9 +75,12 @@ class WebSocketManager {
       });
 
       // 监听WebSocket连接打开事件
-      this.socketTask.onOpen(() => {
-        console.log('WebSocket连接已打开');
+      this.socketTask.onOpen((result) => {
+        console.log('WebSocket连接已打开', result);
         this.isConnected = true;
+
+        // 重置重连计数
+        this.reconnectAttempts = 0;
 
         // 加入房间
         this.joinRoom();
@@ -89,6 +92,13 @@ class WebSocketManager {
         if (this.connectionCallback) {
           this.connectionCallback(true);
         }
+
+        // 发送测试消息
+        this.sendMessage({
+          type: 'test',
+          message: '连接测试',
+          timestamp: Date.now()
+        });
       });
 
       // 监听WebSocket接收到服务器的消息事件
@@ -116,11 +126,22 @@ class WebSocketManager {
       // 监听WebSocket错误事件
       this.socketTask.onError((err) => {
         console.error('WebSocket发生错误:', err);
+        console.error('WebSocket错误详情:', JSON.stringify(err));
         this.isConnected = false;
 
         // 调用连接状态回调
         if (this.connectionCallback) {
           this.connectionCallback(false);
+        }
+
+        // 如果是超时错误，可能是服务器没有响应WebSocket协议升级请求
+        if (err && err.errMsg && err.errMsg.includes('timed out')) {
+          console.error('连接超时，可能是服务器配置问题或网络问题');
+          wx.showToast({
+            title: '连接超时，请检查网络',
+            icon: 'none',
+            duration: 2000
+          });
         }
 
         this.reconnect();
