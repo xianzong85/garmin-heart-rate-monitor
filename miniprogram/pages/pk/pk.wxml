@@ -27,7 +27,7 @@
   </view>
 
   <view class="pk-main">
-    <!-- 设备列表部分 - 始终显示 -->
+    <!-- 设备列表部分 - 始终显示，作为主要内容 -->
     <view class="device-status">
       <view class="device-card {{item.isLeading ? 'leading' : ''}} {{isPKMode && item.rank === 1 ? 'first-place' : ''}} {{isPKMode && item.rank === 2 ? 'second-place' : ''}} {{isPKMode && item.rank === 3 ? 'third-place' : ''}}"
             wx:for="{{connectedDeviceList}}"

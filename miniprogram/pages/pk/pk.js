@@ -63,8 +63,10 @@ Page({
           statusText: '已连接1台设备'
         });
 
-        // 初始化图表
-        that.initChart();
+        // 在PK模式下才初始化图表
+        if (that.data.isPKMode) {
+          that.initChart();
+        }
 
         // 启动心率检查
         that.startHeartRateCheck();
@@ -359,8 +361,10 @@ Page({
           statusText: `已连接${connectedDeviceList.length}台设备`
         });
 
-        // 初始化图表
-        that.initChart();
+        // 在PK模式下才初始化图表
+        if (that.data.isPKMode) {
+          that.initChart();
+        }
 
         // 获取服务
         wx.getBLEDeviceServices({
@@ -798,8 +802,8 @@ Page({
 
     that.setData({ connectedDeviceList });
 
-    // 只在数据变化时重新绘制图表
-    if (dataChanged) {
+    // 只在PK模式下且数据变化时重新绘制图表
+    if (dataChanged && that.data.isPKMode) {
       // 使用节流，不要太频繁更新图表
       if (!that.chartUpdateTimer) {
         that.chartUpdateTimer = setTimeout(() => {
@@ -979,6 +983,11 @@ Page({
               pkTimeLeft: that.data.pkDuration,
               statusText: 'PK进行中...'
             });
+
+            // PK模式开始时初始化图表
+            setTimeout(() => {
+              that.initChart();
+            }, 300);
 
             // 启动倒计时
             that.data.pkTimer = setInterval(() => {
@@ -1246,10 +1255,12 @@ Page({
   },
 
   onReady: function() {
-    // 等待页面渲染完成后初始化图表
-    setTimeout(() => {
-      this.initChart();
-    }, 300);
+    // 等待页面渲染完成后，如果在PK模式下才初始化图表
+    if (this.data.isPKMode) {
+      setTimeout(() => {
+        this.initChart();
+      }, 300);
+    }
   },
 
   onUnload: function() {
