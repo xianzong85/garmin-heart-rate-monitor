@@ -29,13 +29,13 @@ const COLORS = [
 document.addEventListener('DOMContentLoaded', function() {
     // 生成随机房间ID
     generateRoomId();
-    
+
     // 生成二维码
     generateQRCode();
-    
+
     // 初始化图表
     initChart();
-    
+
     // 连接WebSocket服务器
     connectToServer();
 });
@@ -50,14 +50,14 @@ function generateRoomId() {
 // 生成二维码
 function generateQRCode() {
     const qrcodeContainer = document.getElementById('qrcode');
-    
+
     // 清空容器
     qrcodeContainer.innerHTML = '';
-    
+
     // 生成二维码
     // 注意：实际使用时，这里应该是小程序的页面路径或带有参数的URL
     const qrcodeData = `heartrate://connect?roomId=${roomId}`;
-    
+
     // 使用qrcode.js库生成二维码
     new QRCode(qrcodeContainer, {
         text: qrcodeData,
@@ -72,13 +72,13 @@ function generateQRCode() {
 // 初始化图表
 function initChart() {
     const ctx = document.getElementById('heart-rate-chart').getContext('2d');
-    
+
     // 初始化空数据
     chartData = {
         labels: Array(30).fill(''),
         datasets: []
     };
-    
+
     // 创建图表
     heartRateChart = new Chart(ctx, {
         type: 'line',
@@ -125,44 +125,39 @@ function initChart() {
 // 连接到WebSocket服务器
 function connectToServer() {
     // 实际使用时，这里应该是你的WebSocket服务器地址
-    const serverUrl = 'wss://your-websocket-server.com';
-    
-    // 模拟连接成功
-    console.log('WebSocket连接已建立（模拟）');
-    
-    // 在实际应用中，应该使用以下代码连接WebSocket服务器
-    /*
+    const serverUrl = 'ws://localhost:3000';
+
+    // 连接WebSocket服务器
     socket = new WebSocket(serverUrl);
-    
+
     socket.onopen = function() {
         console.log('WebSocket连接已建立');
-        
+
         // 发送加入房间消息
         sendMessage({
             type: 'join',
             roomId: roomId
         });
     };
-    
+
     socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
         handleMessage(data);
     };
-    
+
     socket.onclose = function() {
         console.log('WebSocket连接已关闭');
-        
+
         // 尝试重新连接
         setTimeout(connectToServer, 5000);
     };
-    
+
     socket.onerror = function(error) {
         console.error('WebSocket错误:', error);
     };
-    */
-    
-    // 模拟接收消息（仅用于演示）
-    simulateMessages();
+
+    // 如果需要模拟数据，可以取消下面的注释
+    // simulateMessages();
 }
 
 // 发送消息
@@ -177,20 +172,20 @@ function sendMessage(data) {
 // 处理接收到的消息
 function handleMessage(data) {
     console.log('收到消息:', data);
-    
+
     switch (data.type) {
         case 'heartrate':
             updateHeartRateData(data.devices);
             break;
-            
+
         case 'pkstatus':
             updatePKStatus(data.isPKMode, data.timeLeft);
             break;
-            
+
         case 'pkresults':
             showPKResults(data.results);
             break;
-            
+
         default:
             console.warn('未知消息类型:', data.type);
     }
@@ -199,7 +194,7 @@ function handleMessage(data) {
 // 更新心率数据
 function updateHeartRateData(devices) {
     if (!devices || !Array.isArray(devices)) return;
-    
+
     // 更新参与者列表
     devices.forEach((device, index) => {
         // 如果是新设备，添加到Map中
@@ -207,18 +202,18 @@ function updateHeartRateData(devices) {
             // 为新设备分配颜色
             const colorIndex = participants.size % COLORS.length;
             device.color = COLORS[colorIndex];
-            
+
             // 为图表添加新数据集
             addChartDataset(device);
         }
-        
+
         // 更新设备数据
         participants.set(device.deviceId, {
             ...participants.get(device.deviceId),
             ...device
         });
     });
-    
+
     // 更新UI
     updateParticipantsList();
     updateChart();
@@ -238,7 +233,7 @@ function addChartDataset(device) {
         tension: 0.3,
         fill: false
     };
-    
+
     // 添加到图表数据中
     chartData.datasets.push(newDataset);
 }
@@ -246,35 +241,35 @@ function addChartDataset(device) {
 // 更新参与者列表
 function updateParticipantsList() {
     const listContainer = document.getElementById('participants-list');
-    
+
     // 清空列表
     listContainer.innerHTML = '';
-    
+
     // 按排名排序
     const sortedParticipants = Array.from(participants.values())
         .sort((a, b) => {
             // 未佩戴的设备排在最后
             if (a.isWorn === false && b.isWorn !== false) return 1;
             if (a.isWorn !== false && b.isWorn === false) return -1;
-            
+
             // 按排名排序
             return (a.rank || 999) - (b.rank || 999);
         });
-    
+
     // 创建参与者卡片
     sortedParticipants.forEach(participant => {
         const card = document.createElement('div');
         card.className = 'participant-card';
-        
+
         // 添加领先和未佩戴状态
         if (participant.rank === 1 && participant.isWorn !== false) {
             card.classList.add('leading');
         }
-        
+
         if (participant.isWorn === false) {
             card.classList.add('not-worn');
         }
-        
+
         // 设置卡片内容
         card.innerHTML = `
             <div class="participant-rank rank-${participant.rank || ''}">
@@ -291,7 +286,7 @@ function updateParticipantsList() {
                 <span>BPM</span>
             </div>
         `;
-        
+
         listContainer.appendChild(card);
     });
 }
@@ -302,23 +297,23 @@ function updateChart() {
     participants.forEach((participant, deviceId) => {
         // 查找对应的数据集
         const datasetIndex = chartData.datasets.findIndex(dataset => dataset.label === participant.name);
-        
+
         if (datasetIndex !== -1) {
             // 如果设备未佩戴，不更新数据
             if (participant.isWorn === false) return;
-            
+
             // 获取当前数据
             const currentData = chartData.datasets[datasetIndex].data;
-            
+
             // 移除最早的数据点，添加新的数据点
             currentData.shift();
             currentData.push(participant.heartRate || null);
-            
+
             // 更新数据集
             chartData.datasets[datasetIndex].data = currentData;
         }
     });
-    
+
     // 更新图表
     heartRateChart.update();
 }
@@ -327,21 +322,21 @@ function updateChart() {
 function updatePKStatus(newIsPKMode, newTimeLeft) {
     // 更新PK模式状态
     isPKMode = newIsPKMode;
-    
+
     // 更新倒计时
     pkTimeLeft = newTimeLeft;
-    
+
     // 更新UI
     if (isPKMode) {
         // 显示PK界面
         showScreen('pk-screen');
-        
+
         // 更新状态文本
         document.getElementById('pk-status').textContent = 'PK进行中';
-        
+
         // 更新倒计时
         updateTimer();
-        
+
         // 启动倒计时
         if (pkTimer) clearInterval(pkTimer);
         pkTimer = setInterval(updateTimer, 1000);
@@ -351,10 +346,10 @@ function updatePKStatus(newIsPKMode, newTimeLeft) {
             clearInterval(pkTimer);
             pkTimer = null;
         }
-        
+
         // 更新状态文本
         document.getElementById('pk-status').textContent = '等待开始...';
-        
+
         // 如果不是因为显示结果而结束PK，则显示等待界面
         if (!document.getElementById('result-screen').classList.contains('active')) {
             showScreen('waiting-screen');
@@ -368,15 +363,15 @@ function updateTimer() {
     if (pkTimeLeft > 0) {
         pkTimeLeft--;
     }
-    
+
     // 格式化时间
     const minutes = Math.floor(pkTimeLeft / 60);
     const seconds = pkTimeLeft % 60;
     const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
+
     // 更新UI
     document.getElementById('timer-value').textContent = formattedTime;
-    
+
     // 如果倒计时结束，停止计时器
     if (pkTimeLeft <= 0 && pkTimer) {
         clearInterval(pkTimer);
@@ -387,32 +382,32 @@ function updateTimer() {
 // 显示PK结果
 function showPKResults(results) {
     if (!results || !Array.isArray(results) || results.length === 0) return;
-    
+
     // 显示结果界面
     showScreen('result-screen');
-    
+
     // 更新前三名
     if (results.length > 0) {
         updatePodiumItem('first-place', results[0]);
     }
-    
+
     if (results.length > 1) {
         updatePodiumItem('second-place', results[1]);
     }
-    
+
     if (results.length > 2) {
         updatePodiumItem('third-place', results[2]);
     }
-    
+
     // 更新其他参与者
     const resultList = document.getElementById('result-list');
     resultList.innerHTML = '';
-    
+
     for (let i = 3; i < results.length; i++) {
         const result = results[i];
         const item = document.createElement('div');
         item.className = 'result-item';
-        
+
         item.innerHTML = `
             <div class="result-rank">${i + 1}</div>
             <div class="result-info">
@@ -422,7 +417,7 @@ function showPKResults(results) {
                 ${result.heartRate || '--'}<span>BPM</span>
             </div>
         `;
-        
+
         resultList.appendChild(item);
     }
 }
@@ -431,13 +426,13 @@ function showPKResults(results) {
 function updatePodiumItem(id, data) {
     const item = document.getElementById(id);
     if (!item || !data) return;
-    
+
     // 更新名称
     item.querySelector('.name').textContent = data.name;
-    
+
     // 更新心率
     item.querySelector('.heart-rate').innerHTML = `${data.heartRate || '--'} <span>BPM</span>`;
-    
+
     // 更新头像（这里使用名称的首字母）
     const avatar = item.querySelector('.avatar');
     avatar.textContent = data.name.charAt(0).toUpperCase();
@@ -449,7 +444,7 @@ function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
-    
+
     // 显示指定屏幕
     document.getElementById(screenId).classList.add('active');
 }
@@ -474,49 +469,49 @@ function simulateMessages() {
                 rank: 1
             }
         ];
-        
+
         handleMessage({
             type: 'heartrate',
             devices: devices
         });
     }, 2000);
-    
+
     // 模拟心率数据更新
     let heartRateUpdateInterval = setInterval(() => {
         const devices = Array.from(participants.values()).map(participant => {
             // 如果设备未佩戴，不更新心率
             if (participant.isWorn === false) return participant;
-            
+
             // 随机更新心率（上下浮动5个点）
             const heartRateChange = Math.floor(Math.random() * 11) - 5;
             const newHeartRate = Math.max(60, Math.min(180, (participant.heartRate || 75) + heartRateChange));
-            
+
             return {
                 ...participant,
                 heartRate: newHeartRate
             };
         });
-        
+
         // 按心率排序
         devices.sort((a, b) => {
             if (a.isWorn === false && b.isWorn !== false) return 1;
             if (a.isWorn !== false && b.isWorn === false) return -1;
             return b.heartRate - a.heartRate;
         });
-        
+
         // 更新排名
         devices.forEach((device, index) => {
             if (device.isWorn !== false) {
                 device.rank = index + 1;
             }
         });
-        
+
         handleMessage({
             type: 'heartrate',
             devices: devices
         });
     }, 2000);
-    
+
     // 模拟5秒后添加新设备
     setTimeout(() => {
         const devices = Array.from(participants.values());
@@ -527,26 +522,26 @@ function simulateMessages() {
             isWorn: true,
             rank: 3
         });
-        
+
         // 更新排名
         devices.sort((a, b) => {
             if (a.isWorn === false && b.isWorn !== false) return 1;
             if (a.isWorn !== false && b.isWorn === false) return -1;
             return b.heartRate - a.heartRate;
         });
-        
+
         devices.forEach((device, index) => {
             if (device.isWorn !== false) {
                 device.rank = index + 1;
             }
         });
-        
+
         handleMessage({
             type: 'heartrate',
             devices: devices
         });
     }, 5000);
-    
+
     // 模拟10秒后开始PK
     setTimeout(() => {
         handleMessage({
@@ -555,19 +550,19 @@ function simulateMessages() {
             timeLeft: 180
         });
     }, 10000);
-    
+
     // 模拟30秒后结束PK并显示结果
     setTimeout(() => {
         // 停止心率更新
         clearInterval(heartRateUpdateInterval);
-        
+
         // 结束PK
         handleMessage({
             type: 'pkstatus',
             isPKMode: false,
             timeLeft: 0
         });
-        
+
         // 显示结果
         const results = Array.from(participants.values())
             .filter(participant => participant.isWorn !== false)
@@ -578,7 +573,7 @@ function simulateMessages() {
                 heartRate: participant.heartRate,
                 rank: index + 1
             }));
-        
+
         handleMessage({
             type: 'pkresults',
             results: results

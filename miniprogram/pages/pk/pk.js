@@ -1,8 +1,12 @@
 const app = getApp();
 const { WxChart } = require('../../utils/wxcharts.js');
+const { WebSocketManager } = require('../../utils/websocket-manager.js');
 
 // 设备曲线颜色
 const LINE_COLORS = ['#f56c6c', '#409eff', '#67c23a', '#e6a23c', '#909399'];
+
+// 创建WebSocket管理器实例
+const wsManager = new WebSocketManager();
 
 Page({
   data: {
@@ -23,7 +27,11 @@ Page({
     chartRendered: false,
     // 添加PK结果相关数据
     showPKResult: false,
-    pkResults: []
+    pkResults: [],
+    // 添加大屏幕连接相关数据
+    isConnectedToScreen: false,
+    screenRoomId: '',
+    showScreenConnectModal: false
   },
 
   onLoad: function (options) {
@@ -817,6 +825,11 @@ Page({
     if (that.data.isPKMode) {
       that.updateRanking();
     }
+
+    // 如果连接了大屏幕，发送数据
+    if (that.data.isConnectedToScreen) {
+      that.sendDataToScreen();
+    }
   },
 
   initChart: function () {
@@ -1010,6 +1023,11 @@ Page({
               title: 'PK开始',
               icon: 'success'
             });
+
+            // 如果连接了大屏幕，发送PK状态
+            if (that.data.isConnectedToScreen) {
+              that.sendDataToScreen();
+            }
           }
         }
       });
@@ -1040,6 +1058,12 @@ Page({
       pkResults,
       showPKResult: pkResults.length > 0
     });
+
+    // 如果连接了大屏幕，发送PK结果和状态
+    if (this.data.isConnectedToScreen) {
+      wsManager.sendPKResults(pkResults);
+      this.sendDataToScreen();
+    }
   },
 
   // 隐藏PK结果弹窗
@@ -1285,10 +1309,109 @@ Page({
       });
     });
 
+    // 断开WebSocket连接
+    wsManager.disconnect();
+
     // 移除蓝牙监听器
     wx.offBLECharacteristicValueChange();
     that.hasInitializedBLEListener = false;
 
     console.log('页面卸载，清理资源完成');
+  },
+
+  // 显示大屏幕连接弹窗
+  showScreenConnectModal: function() {
+    this.setData({
+      showScreenConnectModal: true
+    });
+  },
+
+  // 隐藏大屏幕连接弹窗
+  hideScreenConnectModal: function() {
+    this.setData({
+      showScreenConnectModal: false
+    });
+  },
+
+  // 连接到大屏幕
+  connectToScreen: function(e) {
+    const roomId = e.detail.value.roomId;
+    if (!roomId) {
+      wx.showToast({
+        title: '请输入房间ID',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 连接WebSocket
+    const wsUrl = 'ws://localhost:3000'; // 本地开发环境使用localhost
+
+    wx.showLoading({
+      title: '正在连接...'
+    });
+
+    wsManager.connect(wsUrl, roomId,
+      // 消息回调
+      (data) => {
+        console.log('收到大屏幕消息:', data);
+        // 处理来自大屏幕的消息
+      },
+      // 连接状态回调
+      (connected) => {
+        if (connected) {
+          this.setData({
+            isConnectedToScreen: true,
+            screenRoomId: roomId,
+            showScreenConnectModal: false
+          });
+
+          wx.hideLoading();
+          wx.showToast({
+            title: '连接成功',
+            icon: 'success'
+          });
+
+          // 发送当前设备数据
+          this.sendDataToScreen();
+        } else {
+          this.setData({
+            isConnectedToScreen: false
+          });
+
+          wx.hideLoading();
+          wx.showToast({
+            title: '连接失败',
+            icon: 'error'
+          });
+        }
+      }
+    );
+  },
+
+  // 断开大屏幕连接
+  disconnectFromScreen: function() {
+    wsManager.disconnect();
+
+    this.setData({
+      isConnectedToScreen: false,
+      screenRoomId: ''
+    });
+
+    wx.showToast({
+      title: '已断开连接',
+      icon: 'success'
+    });
+  },
+
+  // 发送数据到大屏幕
+  sendDataToScreen: function() {
+    if (!this.data.isConnectedToScreen) return;
+
+    // 发送心率数据
+    wsManager.sendHeartRateData(this.data.connectedDeviceList);
+
+    // 发送PK状态
+    wsManager.sendPKStatus(this.data.isPKMode, this.data.pkTimeLeft);
   }
 });
