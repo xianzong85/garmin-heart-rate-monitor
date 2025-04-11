@@ -125,7 +125,7 @@ function initChart() {
 // 连接到WebSocket服务器
 function connectToServer() {
     // 实际使用时，这里应该是你的WebSocket服务器地址
-    const serverUrl = 'ws://localhost:3000';
+    const serverUrl = 'ws://192.168.1.125:3000';
 
     // 连接WebSocket服务器
     socket = new WebSocket(serverUrl);

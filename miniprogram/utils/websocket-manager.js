@@ -45,16 +45,27 @@ class WebSocketManager {
   createConnection() {
     try {
       console.log('正在连接WebSocket服务器:', this.socketUrl);
-      
+
       // 创建WebSocket任务
       this.socketTask = wx.connectSocket({
         url: this.socketUrl,
+        // 添加协议头信息
+        header: {
+          'content-type': 'application/json'
+        },
+        // 指定协议为websocket
+        protocols: ['protocol1'],
+        // 超时时间
+        timeout: 5000,
         success: () => {
           console.log('WebSocket连接创建成功');
         },
         fail: (err) => {
           console.error('WebSocket连接创建失败:', err);
           this.reconnect();
+        },
+        complete: () => {
+          console.log('WebSocket连接创建完成');
         }
       });
 
@@ -62,13 +73,13 @@ class WebSocketManager {
       this.socketTask.onOpen(() => {
         console.log('WebSocket连接已打开');
         this.isConnected = true;
-        
+
         // 加入房间
         this.joinRoom();
-        
+
         // 开始心跳
         this.startHeartbeat();
-        
+
         // 调用连接状态回调
         if (this.connectionCallback) {
           this.connectionCallback(true);
@@ -78,16 +89,16 @@ class WebSocketManager {
       // 监听WebSocket接收到服务器的消息事件
       this.socketTask.onMessage((res) => {
         console.log('收到WebSocket消息:', res.data);
-        
+
         try {
           const data = JSON.parse(res.data);
-          
+
           // 处理心跳响应
           if (data.type === 'pong') {
             console.log('收到心跳响应');
             return;
           }
-          
+
           // 调用消息回调
           if (this.messageCallback) {
             this.messageCallback(data);
@@ -101,12 +112,12 @@ class WebSocketManager {
       this.socketTask.onError((err) => {
         console.error('WebSocket发生错误:', err);
         this.isConnected = false;
-        
+
         // 调用连接状态回调
         if (this.connectionCallback) {
           this.connectionCallback(false);
         }
-        
+
         this.reconnect();
       });
 
@@ -114,15 +125,15 @@ class WebSocketManager {
       this.socketTask.onClose(() => {
         console.log('WebSocket连接已关闭');
         this.isConnected = false;
-        
+
         // 停止心跳
         this.stopHeartbeat();
-        
+
         // 调用连接状态回调
         if (this.connectionCallback) {
           this.connectionCallback(false);
         }
-        
+
         this.reconnect();
       });
     } catch (err) {
@@ -136,12 +147,12 @@ class WebSocketManager {
    */
   joinRoom() {
     if (!this.isConnected || !this.roomId) return;
-    
+
     const message = {
       type: 'join',
       roomId: this.roomId
     };
-    
+
     this.sendMessage(message);
   }
 
@@ -154,10 +165,10 @@ class WebSocketManager {
       console.warn('WebSocket未连接，无法发送消息');
       return false;
     }
-    
+
     try {
       const message = typeof data === 'string' ? data : JSON.stringify(data);
-      
+
       this.socketTask.send({
         data: message,
         success: () => {
@@ -167,7 +178,7 @@ class WebSocketManager {
           console.error('WebSocket消息发送失败:', err);
         }
       });
-      
+
       return true;
     } catch (err) {
       console.error('发送WebSocket消息时发生异常:', err);
@@ -181,7 +192,7 @@ class WebSocketManager {
    */
   sendHeartRateData(deviceList) {
     if (!this.isConnected || !this.roomId) return false;
-    
+
     // 提取需要发送的数据
     const devices = deviceList.map(device => ({
       deviceId: device.deviceId,
@@ -193,14 +204,14 @@ class WebSocketManager {
       minHeartRate: device.minHeartRate,
       avgHeartRate: device.avgHeartRate
     }));
-    
+
     const message = {
       type: 'heartrate',
       roomId: this.roomId,
       devices,
       timestamp: Date.now()
     };
-    
+
     return this.sendMessage(message);
   }
 
@@ -211,7 +222,7 @@ class WebSocketManager {
    */
   sendPKStatus(isPKMode, timeLeft) {
     if (!this.isConnected || !this.roomId) return false;
-    
+
     const message = {
       type: 'pkstatus',
       roomId: this.roomId,
@@ -219,7 +230,7 @@ class WebSocketManager {
       timeLeft,
       timestamp: Date.now()
     };
-    
+
     return this.sendMessage(message);
   }
 
@@ -229,14 +240,14 @@ class WebSocketManager {
    */
   sendPKResults(results) {
     if (!this.isConnected || !this.roomId) return false;
-    
+
     const message = {
       type: 'pkresults',
       roomId: this.roomId,
       results,
       timestamp: Date.now()
     };
-    
+
     return this.sendMessage(message);
   }
 
@@ -245,14 +256,14 @@ class WebSocketManager {
    */
   startHeartbeat() {
     this.stopHeartbeat();
-    
+
     this.heartbeatTimer = setInterval(() => {
       if (this.isConnected) {
         const message = {
           type: 'ping',
           timestamp: Date.now()
         };
-        
+
         this.sendMessage(message);
       }
     }, this.heartbeatInterval);
@@ -277,7 +288,7 @@ class WebSocketManager {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
-    
+
     // 设置重连定时器
     this.reconnectTimer = setTimeout(() => {
       console.log('正在尝试重新连接WebSocket...');
@@ -291,13 +302,13 @@ class WebSocketManager {
   disconnect() {
     // 停止心跳
     this.stopHeartbeat();
-    
+
     // 清除重连定时器
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
-    
+
     // 关闭WebSocket连接
     if (this.socketTask && this.isConnected) {
       try {
@@ -313,10 +324,10 @@ class WebSocketManager {
         console.error('关闭WebSocket连接时发生异常:', err);
       }
     }
-    
+
     this.isConnected = false;
     this.socketTask = null;
-    
+
     // 调用连接状态回调
     if (this.connectionCallback) {
       this.connectionCallback(false);

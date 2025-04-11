@@ -1345,7 +1345,7 @@ Page({
     }
 
     // 连接WebSocket
-    const wsUrl = 'ws://localhost:3000'; // 本地开发环境使用localhost
+    const wsUrl = 'ws://192.168.1.125:3000'; // 使用本机IP地址代替localhost
 
     wx.showLoading({
       title: '正在连接...'
