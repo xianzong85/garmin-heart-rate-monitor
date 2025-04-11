@@ -68,7 +68,17 @@ server.listen(PORT, '0.0.0.0', () => {
 });
 
 // 创建WebSocket服务器
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({
+    server,
+    // 禁用协议头验证
+    verifyClient: () => true,
+    // 允许所有来源
+    origin: '*',
+    // 增加心跳超时
+    clientTracking: true,
+    // 增加最大消息大小
+    maxPayload: 64 * 1024 * 1024 // 64MB
+});
 
 // 存储连接的客户端
 const clients = new Map();
@@ -76,9 +86,28 @@ const clients = new Map();
 // 存储房间信息
 const rooms = new Map();
 
+// 打印服务器信息
+console.log(`WebSocket服务器已启动，监听地址: ws://0.0.0.0:${PORT}`);
+
+// 监听服务器错误
+wss.on('error', (error) => {
+    console.error('WebSocket服务器错误:', error);
+});
+
+// 监听服务器关闭
+wss.on('close', () => {
+    console.log('WebSocket服务器已关闭');
+});
+
+// 监听即将到来的连接
+wss.on('headers', (headers, request) => {
+    console.log('WebSocket握手头信息:', headers);
+});
+
 // 处理WebSocket连接
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, request) => {
     console.log('新的WebSocket连接');
+    console.log('连接来源:', request.socket.remoteAddress);
 
     // 为客户端分配唯一ID
     const clientId = Date.now().toString();

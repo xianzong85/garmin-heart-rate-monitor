@@ -9,9 +9,11 @@ class WebSocketManager {
     this.socketTask = null; // WebSocket任务对象
     this.isConnected = false; // 连接状态
     this.reconnectTimer = null; // 重连定时器
-    this.reconnectInterval = 5000; // 重连间隔（毫秒）
+    this.reconnectInterval = 3000; // 重连间隔（毫秒）
+    this.reconnectAttempts = 0; // 重连尝试次数
+    this.maxReconnectAttempts = 5; // 最大重连尝试次数
     this.heartbeatTimer = null; // 心跳定时器
-    this.heartbeatInterval = 30000; // 心跳间隔（毫秒）
+    this.heartbeatInterval = 15000; // 心跳间隔（毫秒）
     this.messageCallback = null; // 消息回调函数
     this.connectionCallback = null; // 连接状态回调函数
     this.roomId = ''; // 房间ID
@@ -35,6 +37,9 @@ class WebSocketManager {
     this.messageCallback = messageCallback;
     this.connectionCallback = connectionCallback;
 
+    // 重置重连计数
+    this.reconnectAttempts = 0;
+
     // 创建WebSocket连接
     this.createConnection();
   }
@@ -53,8 +58,8 @@ class WebSocketManager {
         header: {
           'content-type': 'application/json'
         },
-        // 指定协议为websocket
-        protocols: ['protocol1'],
+        // 不指定协议，使用默认协议
+        // protocols: ['protocol1'],
         // 超时时间
         timeout: 5000,
         success: () => {
@@ -289,11 +294,30 @@ class WebSocketManager {
       this.reconnectTimer = null;
     }
 
+    // 增加重连尝试次数
+    this.reconnectAttempts++;
+
+    // 检查是否超过最大重连次数
+    if (this.reconnectAttempts > this.maxReconnectAttempts) {
+      console.log(`超过最大重连次数 ${this.maxReconnectAttempts}，停止重连`);
+
+      // 调用连接状态回调
+      if (this.connectionCallback) {
+        this.connectionCallback(false);
+      }
+
+      return;
+    }
+
+    // 计算指数退避的重连间隔
+    const delay = this.reconnectInterval * Math.pow(1.5, this.reconnectAttempts - 1);
+    console.log(`将在 ${delay}ms 后进行第 ${this.reconnectAttempts} 次重连尝试`);
+
     // 设置重连定时器
     this.reconnectTimer = setTimeout(() => {
       console.log('正在尝试重新连接WebSocket...');
       this.createConnection();
-    }, this.reconnectInterval);
+    }, delay);
   }
 
   /**
@@ -309,15 +333,23 @@ class WebSocketManager {
       this.reconnectTimer = null;
     }
 
+    // 重置重连计数
+    this.reconnectAttempts = 0;
+
     // 关闭WebSocket连接
-    if (this.socketTask && this.isConnected) {
+    if (this.socketTask) {
       try {
         this.socketTask.close({
+          code: 1000, // 正常关闭
+          reason: 'User closed connection',
           success: () => {
             console.log('WebSocket连接已关闭');
           },
           fail: (err) => {
             console.error('关闭WebSocket连接失败:', err);
+          },
+          complete: () => {
+            console.log('WebSocket关闭操作完成');
           }
         });
       } catch (err) {
