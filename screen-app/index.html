@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心率PK大屏幕</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 等待连接界面 -->
+        <div id="waiting-screen" class="screen active">
+            <div class="logo">
+                <img src="img/logo.png" alt="心率PK" class="logo-img">
+                <h1>心率PK大屏幕</h1>
+            </div>
+            <div class="connection-info">
+                <div class="qrcode-container">
+                    <div id="qrcode"></div>
+                </div>
+                <div class="room-id">
+                    <h2>房间ID</h2>
+                    <div class="room-id-display" id="room-id-display">------</div>
+                    <p class="instruction">使用小程序扫描二维码或输入房间ID连接</p>
+                </div>
+            </div>
+            <div class="waiting-animation">
+                <div class="pulse"></div>
+                <div class="pulse"></div>
+                <div class="pulse"></div>
+            </div>
+        </div>
+
+        <!-- PK界面 -->
+        <div id="pk-screen" class="screen">
+            <div class="header">
+                <div class="title">心率PK</div>
+                <div class="timer" id="pk-timer">
+                    <span class="timer-label">倒计时</span>
+                    <span class="timer-value" id="timer-value">--:--</span>
+                </div>
+                <div class="status" id="pk-status">等待开始...</div>
+            </div>
+            
+            <div class="main-content">
+                <div class="participants-panel">
+                    <h2>参与者</h2>
+                    <div class="participants-list" id="participants-list">
+                        <!-- 参与者列表将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+                
+                <div class="chart-panel">
+                    <h2>实时心率</h2>
+                    <div class="chart-container">
+                        <canvas id="heart-rate-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果界面 -->
+        <div id="result-screen" class="screen">
+            <div class="result-header">
+                <h1>PK结果</h1>
+            </div>
+            
+            <div class="podium">
+                <div class="podium-item second" id="second-place">
+                    <div class="crown">2</div>
+                    <div class="avatar"></div>
+                    <div class="name">--</div>
+                    <div class="heart-rate">-- <span>BPM</span></div>
+                </div>
+                
+                <div class="podium-item first" id="first-place">
+                    <div class="crown">👑</div>
+                    <div class="avatar"></div>
+                    <div class="name">--</div>
+                    <div class="heart-rate">-- <span>BPM</span></div>
+                </div>
+                
+                <div class="podium-item third" id="third-place">
+                    <div class="crown">3</div>
+                    <div class="avatar"></div>
+                    <div class="name">--</div>
+                    <div class="heart-rate">-- <span>BPM</span></div>
+                </div>
+            </div>
+            
+            <div class="result-list" id="result-list">
+                <!-- 其他参与者将通过JavaScript动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
