@@ -1,0 +1,166 @@
+/* pages/about/about.wxss */
+.about-container {
+  padding: 30rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 应用信息 */
+.app-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 0;
+}
+
+.app-logo {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 40rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  background-color: #409eff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.app-name {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.app-version {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 功能介绍 */
+.feature-section, .contact-section, .system-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8rpx;
+  height: 32rpx;
+  background-color: #409eff;
+  border-radius: 4rpx;
+}
+
+.feature-list, .contact-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-item, .contact-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.feature-item:last-child, .contact-item:last-child {
+  border-bottom: none;
+}
+
+.feature-icon, .contact-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background-color: #f0f7ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20rpx;
+}
+
+.feature-icon, .contact-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.feature-content, .contact-content {
+  flex: 1;
+}
+
+.feature-title, .contact-title {
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.feature-desc, .contact-value {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.contact-action {
+  font-size: 26rpx;
+  color: #409eff;
+  padding: 10rpx 20rpx;
+  border: 1rpx solid #409eff;
+  border-radius: 30rpx;
+}
+
+/* 系统信息 */
+.system-info {
+  background-color: #f9f9f9;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.system-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.system-item:last-child {
+  border-bottom: none;
+}
+
+.system-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.system-value {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 版权信息 */
+.copyright {
+  text-align: center;
+  padding: 40rpx 0;
+  font-size: 24rpx;
+  color: #999;
+}

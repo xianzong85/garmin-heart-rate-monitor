@@ -1,0 +1,100 @@
+<view class="about-container">
+  <!-- 应用信息 -->
+  <view class="app-info">
+    <view class="app-logo">心率PK</view>
+    <text class="app-name">{{appName}}</text>
+    <text class="app-version">版本 {{version}}</text>
+  </view>
+
+  <!-- 功能介绍 -->
+  <view class="feature-section">
+    <view class="section-title">功能介绍</view>
+    <view class="feature-list">
+      <view class="feature-item">
+        <view class="feature-icon">
+          <text>PK</text>
+        </view>
+        <view class="feature-content">
+          <text class="feature-title">心率PK</text>
+          <text class="feature-desc">多人心率实时对比，激发运动热情</text>
+        </view>
+      </view>
+
+      <view class="feature-item">
+        <view class="feature-icon">
+          <text>屏</text>
+        </view>
+        <view class="feature-content">
+          <text class="feature-title">大屏显示</text>
+          <text class="feature-desc">支持大屏幕显示，适合团体活动</text>
+        </view>
+      </view>
+
+      <view class="feature-item">
+        <view class="feature-icon">
+          <text>家</text>
+        </view>
+        <view class="feature-content">
+          <text class="feature-title">家庭管理</text>
+          <text class="feature-desc">支持多个家庭成员使用同一账号</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 联系我们 -->
+  <view class="contact-section">
+    <view class="section-title">联系我们</view>
+    <view class="contact-list">
+      <view class="contact-item" bindtap="copyWechat">
+        <view class="contact-icon">
+          <text>W</text>
+        </view>
+        <view class="contact-content">
+          <text class="contact-title">微信</text>
+          <text class="contact-value">your-wechat-id</text>
+        </view>
+        <view class="contact-action">
+          <text>复制</text>
+        </view>
+      </view>
+
+      <view class="contact-item" bindtap="callPhone">
+        <view class="contact-icon">
+          <text>T</text>
+        </view>
+        <view class="contact-content">
+          <text class="contact-title">电话</text>
+          <text class="contact-value">10086</text>
+        </view>
+        <view class="contact-action">
+          <text>拨打</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 系统信息 -->
+  <view class="system-section" wx:if="{{systemInfo}}">
+    <view class="section-title">系统信息</view>
+    <view class="system-info">
+      <view class="system-item">
+        <text class="system-label">设备品牌</text>
+        <text class="system-value">{{systemInfo.brand}} {{systemInfo.model}}</text>
+      </view>
+      <view class="system-item">
+        <text class="system-label">系统版本</text>
+        <text class="system-value">{{systemInfo.system}}</text>
+      </view>
+      <view class="system-item">
+        <text class="system-label">微信版本</text>
+        <text class="system-value">{{systemInfo.version}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 版权信息 -->
+  <view class="copyright">
+    <text>{{copyright}}</text>
+  </view>
+</view>

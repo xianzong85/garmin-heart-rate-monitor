@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>心率PK大屏幕</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style-optimized.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -12,7 +12,6 @@
         <!-- 等待连接界面 -->
         <div id="waiting-screen" class="screen active">
             <div class="logo">
-                <img src="img/logo.png" alt="心率PK" class="logo-img">
                 <h1>心率PK大屏幕</h1>
             </div>
             <div class="connection-info">
@@ -30,19 +29,44 @@
                 <div class="pulse"></div>
                 <div class="pulse"></div>
             </div>
+
+            <!-- 调试按钮 -->
+            <div class="debug-panel" style="margin-top: 20px; text-align: center;">
+                <button id="debug-test-data" style="padding: 10px 20px; margin: 5px; background-color: #409eff; color: white; border: none; border-radius: 4px; cursor: pointer;">模拟测试数据</button>
+                <button id="debug-switch-screen" style="padding: 10px 20px; margin: 5px; background-color: #67c23a; color: white; border: none; border-radius: 4px; cursor: pointer;">切换到PK界面</button>
+                <button id="open-settings" style="padding: 10px 20px; margin: 5px; background-color: #ffcc33; color: #1a2a6c; border: none; border-radius: 4px; cursor: pointer;">设备设置</button>
+            </div>
         </div>
 
         <!-- PK界面 -->
         <div id="pk-screen" class="screen">
             <div class="header">
                 <div class="title">心率PK</div>
-                <div class="timer" id="pk-timer">
-                    <span class="timer-label">倒计时</span>
-                    <span class="timer-value" id="timer-value">--:--</span>
+                <div class="header-center">
+                    <div class="venue-info" id="venue-display">
+                        <span class="venue-name" id="venue-name">未设置场地</span>
+                    </div>
+                    <div class="room-info">
+                        <span class="room-label">房间ID</span>
+                        <span class="room-id-value" id="pk-room-id">------</span>
+                    </div>
+                    <div class="qr-container">
+                        <div id="pk-qrcode" class="qr-code"></div>
+                    </div>
+                    <div class="timer" id="pk-timer">
+                        <span class="timer-label">倒计时</span>
+                        <span class="timer-value" id="timer-value">--:--</span>
+                    </div>
+                    <div class="status" id="pk-status">等待开始...</div>
                 </div>
-                <div class="status" id="pk-status">等待开始...</div>
+                <button id="pk-settings-btn" class="settings-btn" title="设备设置">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
             </div>
-            
+
             <div class="main-content">
                 <div class="participants-panel">
                     <h2>参与者</h2>
@@ -50,11 +74,33 @@
                         <!-- 参与者列表将通过JavaScript动态生成 -->
                     </div>
                 </div>
-                
+
                 <div class="chart-panel">
                     <h2>实时心率</h2>
                     <div class="chart-container">
                         <canvas id="heart-rate-chart"></canvas>
+                    </div>
+                    <div class="heart-rate-zones">
+                        <div class="heart-rate-zone zone-1">
+                            <div class="zone-circle">90%</div>
+                            <div class="zone-label">极限区间</div>
+                        </div>
+                        <div class="heart-rate-zone zone-2">
+                            <div class="zone-circle">80%</div>
+                            <div class="zone-label">无氧耐力区</div>
+                        </div>
+                        <div class="heart-rate-zone zone-3">
+                            <div class="zone-circle">70%</div>
+                            <div class="zone-label">有氧耐力区</div>
+                        </div>
+                        <div class="heart-rate-zone zone-4">
+                            <div class="zone-circle">60%</div>
+                            <div class="zone-label">有氧燃烧区</div>
+                        </div>
+                        <div class="heart-rate-zone zone-5">
+                            <div class="zone-circle">50%</div>
+                            <div class="zone-label">轻松恢复区</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -65,7 +111,7 @@
             <div class="result-header">
                 <h1>PK结果</h1>
             </div>
-            
+
             <div class="podium">
                 <div class="podium-item second" id="second-place">
                     <div class="crown">2</div>
@@ -73,14 +119,14 @@
                     <div class="name">--</div>
                     <div class="heart-rate">-- <span>BPM</span></div>
                 </div>
-                
+
                 <div class="podium-item first" id="first-place">
                     <div class="crown">👑</div>
                     <div class="avatar"></div>
                     <div class="name">--</div>
                     <div class="heart-rate">-- <span>BPM</span></div>
                 </div>
-                
+
                 <div class="podium-item third" id="third-place">
                     <div class="crown">3</div>
                     <div class="avatar"></div>
@@ -88,14 +134,14 @@
                     <div class="heart-rate">-- <span>BPM</span></div>
                 </div>
             </div>
-            
+
             <div class="result-list" id="result-list">
                 <!-- 其他参与者将通过JavaScript动态生成 -->
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

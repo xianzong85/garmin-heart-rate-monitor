@@ -23,6 +23,10 @@
         <text class="btn-icon {{isLandscape ? 'icon-portrait' : 'icon-landscape'}}"></text>
         <text>{{isLandscape ? '竖屏' : '横屏'}}</text>
       </button>
+      <button class="control-btn screen-connect {{isConnectedToScreen ? 'connected' : ''}}" bindtap="{{isConnectedToScreen ? 'disconnectFromScreen' : 'showScreenConnectModal'}}">
+        <text class="btn-icon icon-screen"></text>
+        <text>{{isConnectedToScreen ? '断开大屏' : '连接大屏'}}</text>
+      </button>
     </view>
   </view>
 
@@ -220,5 +224,53 @@
         <button class="result-btn" bindtap="hidePKResult">确定</button>
       </view>
     </view>
+  </view>
+
+  <!-- 大屏幕连接弹窗 -->
+  <view class="user-select-mask" wx:if="{{showScreenConnectModal}}" bindtap="hideScreenConnectModal"></view>
+  <view class="user-select-modal" wx:if="{{showScreenConnectModal}}">
+    <view class="user-select-header">
+      <text class="user-select-title">连接大屏幕</text>
+      <view class="user-select-close" bindtap="hideScreenConnectModal">×</view>
+    </view>
+    <view class="user-select-content">
+      <form bindsubmit="connectToScreen">
+        <view class="input-group">
+          <text class="input-label">房间ID</text>
+          <input class="input-field" name="roomId" placeholder="请输入房间ID" value="{{screenRoomId}}" bindinput="handleRoomIdInput" />
+        </view>
+      </form>
+    </view>
+    <view class="user-select-footer">
+      <button class="user-select-cancel" bindtap="hideScreenConnectModal">取消</button>
+      <button class="user-select-confirm" bindtap="connectToScreen">连接</button>
+    </view>
+  </view>
+</view>
+
+<!-- 选择使用人弹窗 -->
+<view class="user-select-mask" wx:if="{{showUserSelectModal}}" bindtap="cancelUserSelection"></view>
+<view class="user-select-modal" wx:if="{{showUserSelectModal}}">
+  <view class="user-select-header">
+    <text class="user-select-title">选择使用人</text>
+    <view class="user-select-close" bindtap="cancelUserSelection">×</view>
+  </view>
+  <scroll-view scroll-y class="user-select-content">
+    <view class="user-select-list">
+      <view class="user-select-item {{selectedMemberId === item.id ? 'selected' : ''}}"
+            wx:for="{{familyMembers}}"
+            wx:key="id"
+            bindtap="selectUser"
+            data-id="{{item.id}}">
+        <view class="user-select-avatar">
+          <text class="user-select-initial">{{item.nickname[0]}}</text>
+        </view>
+        <text class="user-select-name">{{item.nickname}}</text>
+      </view>
+    </view>
+  </scroll-view>
+  <view class="user-select-footer">
+    <button class="user-select-cancel" bindtap="cancelUserSelection">取消</button>
+    <button class="user-select-confirm" bindtap="confirmUserSelection">确定</button>
   </view>
 </view>

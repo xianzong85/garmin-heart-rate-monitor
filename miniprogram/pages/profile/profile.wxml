@@ -1,0 +1,77 @@
+<view class="profile-container">
+  <!-- 用户信息区域 -->
+  <view class="user-info-section">
+    <view class="user-info" wx:if="{{hasUserInfo}}">
+      <view class="avatar">
+        <text>{{userInfo.nickName[0]}}</text>
+      </view>
+      <view class="user-details">
+        <text class="nickname">{{userInfo.nickName}}</text>
+      </view>
+    </view>
+    <view class="user-info-placeholder" wx:else>
+      <view class="avatar-placeholder">
+        <text>?</text>
+      </view>
+      <button class="login-btn" bindtap="getUserProfile">登录/注册</button>
+    </view>
+  </view>
+
+  <!-- 功能菜单区域 -->
+  <view class="menu-section">
+    <view class="menu-item" bindtap="navigateToFamilyManagement">
+      <view class="menu-content">
+        <text class="menu-title">家庭成员管理</text>
+        <text class="menu-description">管理您的家庭成员信息</text>
+      </view>
+      <view class="menu-arrow">
+        <text>></text>
+      </view>
+    </view>
+
+    <view class="menu-item" bindtap="navigateToDeviceUsage">
+      <view class="menu-content">
+        <text class="menu-title">设备使用记录</text>
+        <text class="menu-description">查看您的设备使用历史</text>
+      </view>
+      <view class="menu-arrow">
+        <text>></text>
+      </view>
+    </view>
+
+    <view class="menu-item" bindtap="navigateToAbout">
+      <view class="menu-content">
+        <text class="menu-title">关于</text>
+        <text class="menu-description">了解更多信息</text>
+      </view>
+      <view class="menu-arrow">
+        <text>></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 家庭成员预览区域 -->
+  <view class="family-preview-section" wx:if="{{hasUserInfo && familyMembers.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">家庭成员</text>
+      <text class="section-action" bindtap="navigateToFamilyManagement">管理</text>
+    </view>
+    <view class="family-members-list">
+      <view class="family-member-item" wx:for="{{familyMembers}}" wx:key="id">
+        <view class="member-avatar">
+          <text class="member-initial">{{item.nickname[0]}}</text>
+        </view>
+        <view class="member-info">
+          <text class="member-name">{{item.nickname}}</text>
+          <text class="member-relation">{{item.relationship}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载中提示 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

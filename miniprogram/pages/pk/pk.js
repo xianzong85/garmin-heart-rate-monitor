@@ -31,7 +31,12 @@ Page({
     // 添加大屏幕连接相关数据
     isConnectedToScreen: false,
     screenRoomId: '',
-    showScreenConnectModal: false
+    showScreenConnectModal: false,
+    // 添加用户选择相关数据
+    showUserSelectModal: false,
+    connectingDeviceId: '',
+    familyMembers: [],
+    selectedMemberId: null
   },
 
   onLoad: function (options) {
@@ -40,6 +45,9 @@ Page({
     // 初始化蓝牙监听器
     that.hasInitializedBLEListener = false;
     that.initBLECharacteristicValueChangeListener();
+
+    // 加载家庭成员
+    this.loadFamilyMembers();
 
     if (options.device) {
       try {
@@ -316,7 +324,77 @@ Page({
       return d;
     });
 
-    that.setData({ devices });
+    that.setData({
+      devices,
+      connectingDeviceId: device.deviceId
+    });
+
+    // 如果有家庭成员，显示选择弹窗
+    if (that.data.familyMembers.length > 0) {
+      that.setData({
+        showUserSelectModal: true
+      });
+    } else {
+      // 直接连接设备
+      that.proceedConnectDevice(device);
+    }
+  },
+
+  // 选择使用人
+  selectUser: function(e) {
+    const memberId = e.currentTarget.dataset.id;
+    this.setData({
+      selectedMemberId: memberId
+    });
+  },
+
+  // 确认选择使用人
+  confirmUserSelection: function() {
+    const that = this;
+    const deviceId = that.data.connectingDeviceId;
+    const device = that.data.devices.find(d => d.deviceId === deviceId);
+
+    if (!device) {
+      wx.showToast({
+        title: '设备信息丢失',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 隐藏选择弹窗
+    that.setData({
+      showUserSelectModal: false
+    });
+
+    // 连接设备
+    that.proceedConnectDevice(device);
+  },
+
+  // 取消选择使用人
+  cancelUserSelection: function() {
+    const that = this;
+    const deviceId = that.data.connectingDeviceId;
+
+    // 更新设备状态
+    const updatedDevices = that.data.devices.map(d => {
+      if (d.deviceId === deviceId) {
+        d.connecting = false;
+      }
+      return d;
+    });
+
+    that.setData({
+      devices: updatedDevices,
+      showUserSelectModal: false,
+      connectingDeviceId: '',
+      selectedMemberId: null
+    });
+  },
+
+  // 继续连接设备
+  proceedConnectDevice: function(device) {
+    const that = this;
 
     // 停止搜索
     wx.stopBluetoothDevicesDiscovery();
@@ -337,9 +415,18 @@ Page({
         const currentDeviceCount = that.data.connectedDeviceList.length;
         const colorIndex = currentDeviceCount % LINE_COLORS.length;
 
+        // 获取选中的家庭成员
+        let memberName = '';
+        if (that.data.selectedMemberId) {
+          const selectedMember = that.data.familyMembers.find(m => m.id === that.data.selectedMemberId);
+          if (selectedMember) {
+            memberName = selectedMember.nickname;
+          }
+        }
+
         const newDevice = {
           deviceId: device.deviceId,
-          name: device.name || '未知设备',
+          name: memberName || device.name || '未知设备',
           heartRate: null,
           heartRateData: [],
           timeData: [],
@@ -1322,7 +1409,8 @@ Page({
   // 显示大屏幕连接弹窗
   showScreenConnectModal: function() {
     this.setData({
-      showScreenConnectModal: true
+      showScreenConnectModal: true,
+      screenRoomId: ''
     });
   },
 
@@ -1333,9 +1421,47 @@ Page({
     });
   },
 
+  // 处理房间ID输入
+  handleRoomIdInput: function(e) {
+    this.setData({
+      screenRoomId: e.detail.value
+    });
+  },
+
+  // 加载家庭成员
+  loadFamilyMembers: function() {
+    const that = this;
+
+    // 检查完整的登录状态
+    if (!app.checkLoginStatus()) {
+      console.log('未完全登录，不加载家庭成员');
+      return;
+    }
+
+    const userId = wx.getStorageSync('userId') || app.globalData.userId;
+
+    wx.request({
+      url: `${app.globalData.apiBaseUrl}/api/family-members?userId=${userId}`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data.members) {
+          that.setData({
+            familyMembers: res.data.members
+          });
+          console.log('家庭成员加载成功:', res.data.members.length);
+        } else {
+          console.error('获取家庭成员失败:', res.data.error);
+        }
+      },
+      fail: (err) => {
+        console.error('请求失败:', err);
+      }
+    });
+  },
+
   // 连接到大屏幕
-  connectToScreen: function(e) {
-    const roomId = e.detail.value.roomId;
+  connectToScreen: function() {
+    const roomId = this.data.screenRoomId;
     if (!roomId) {
       wx.showToast({
         title: '请输入房间ID',
@@ -1345,10 +1471,7 @@ Page({
     }
 
     // 连接WebSocket
-    // 注意：微信小程序正式环境必须使用wss://协议
-    // 开发环境可以关闭域名校验使用ws://
-    const wsUrl = 'ws://192.168.1.125:3000'; // 开发环境使用ws://
-    // const wsUrl = 'wss://192.168.1.125:3000'; // 正式环境使用wss://
+    const wsUrl = 'ws://192.168.1.205:8080'; // 使用新的服务器地址和端口
 
     wx.showLoading({
       title: '正在连接...'

@@ -1,12 +1,36 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/pk/pk"
+    "pages/pk/pk",
+    "pages/profile/profile",
+    "pages/family/family",
+    "pages/device-usage/device-usage",
+    "pages/about/about"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "佳明手表心率",
+    "navigationBarTitleText": "心率PK",
     "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#409eff",
+    "backgroundColor": "#fff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/pk/pk",
+        "text": "心率PK"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
   }
 }

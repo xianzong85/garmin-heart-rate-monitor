@@ -14,8 +14,8 @@
 
 body {
     font-family: 'DIN', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
+    background-color: #0f1a2b;
+    color: #fff;
     overflow: hidden;
 }
 
@@ -96,8 +96,8 @@ body {
 .qrcode-container {
     background: white;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 #qrcode {
@@ -110,24 +110,24 @@ body {
 }
 
 .room-id h2 {
-    font-size: 24px;
+    font-size: 28px;
     margin-bottom: 15px;
 }
 
 .room-id-display {
-    font-size: 48px;
+    font-size: 52px;
     font-weight: bold;
-    letter-spacing: 5px;
+    letter-spacing: 8px;
     background: rgba(255, 255, 255, 0.2);
     padding: 15px 30px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .instruction {
-    font-size: 18px;
-    opacity: 0.8;
+    font-size: 20px;
+    opacity: 0.9;
 }
 
 .waiting-animation {
@@ -168,62 +168,154 @@ body {
 
 /* PK界面 */
 #pk-screen {
-    background: #1e3a5f;
+    background: #0f1a2b;
     display: flex;
     flex-direction: column;
 }
 
 .header {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.3);
     color: white;
     padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    height: 80px;
+}
+
+.header-center {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
 }
 
 .title {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: bold;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.room-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.room-label {
+    font-size: 16px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.room-id-value {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #ffcc33;
+    text-shadow: 0 0 10px rgba(255, 204, 51, 0.5);
+}
+
+.venue-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.venue-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4caf50;
+    text-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.qr-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px;
+    border-radius: 6px;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    margin: 0 10px;
+    overflow: hidden;
+}
+
+.qr-code {
+    width: 60px;
+    height: 60px;
+}
+
+.settings-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    margin-left: 15px;
+}
+
+.settings-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: rotate(30deg);
 }
 
 .timer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 10px 25px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .timer-label {
-    font-size: 18px;
-    opacity: 0.9;
+    font-size: 16px;
+    opacity: 0.8;
     margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 .timer-value {
-    font-size: 42px;
+    font-size: 28px;
     font-weight: bold;
-    font-family: 'Courier New', monospace;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: pulse-text 1s infinite alternate;
+}
+
+@keyframes pulse-text {
+    from { opacity: 0.8; }
+    to { opacity: 1; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
 }
 
 .status {
-    font-size: 24px;
-    padding: 10px 25px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    font-weight: 500;
-    letter-spacing: 1px;
+    font-size: 20px;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .main-content {
@@ -237,7 +329,7 @@ body {
 
 .participants-panel {
     flex: 1;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 20px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     padding: 25px;
@@ -259,138 +351,128 @@ body {
 .participants-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
 }
 
 .participant-card {
     display: flex;
     align-items: center;
-    padding: 20px;
-    border-radius: 15px;
-    background: linear-gradient(135deg, #ff9966, #ff5e62);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 15px;
     transition: all 0.3s ease;
-    color: white;
-    box-shadow: 0 5px 15px rgba(255, 94, 98, 0.3);
-    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
 }
 
+.participant-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
 .participant-card.leading {
-    background: linear-gradient(135deg, #ff7e5f, #feb47b);
-    transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(255, 126, 95, 0.4);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05));
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.1);
+    animation: pulse-gold 2s infinite alternate;
+}
+
+@keyframes pulse-gold {
+    from { box-shadow: 0 5px 15px rgba(255, 215, 0, 0.1); }
+    to { box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3); }
 }
 
 .participant-card.not-worn {
     opacity: 0.6;
-}
-
-.participant-rank {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.3);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    font-weight: bold;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    z-index: 2;
-}
-
-.participant-rank.rank-1 {
-    background: #ffc107;
-    color: #000;
-    border-color: #fff;
-}
-
-.participant-rank.rank-2 {
-    background: #78909c;
-    color: #fff;
-    border-color: #cfd8dc;
-}
-
-.participant-rank.rank-3 {
-    background: #8d6e63;
-    color: #fff;
-    border-color: #d7ccc8;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .participant-avatar {
-    position: relative;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    margin-right: 20px;
+    background: rgba(255, 255, 255, 0.1);
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    overflow: hidden;
+    margin-right: 15px;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-.participant-avatar::before {
-    content: '';
+.participant-rank {
     position: absolute;
-    bottom: 0;
-    left: 0;
     width: 100%;
-    height: 30%;
-    background: rgba(0, 0, 0, 0.2);
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.rank-1 {
+    background: rgba(255, 215, 0, 0.2);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    color: #ffd700;
+}
+
+.rank-2 {
+    background: rgba(192, 192, 192, 0.2);
+    border: 2px solid rgba(192, 192, 192, 0.5);
+    color: #c0c0c0;
+}
+
+.rank-3 {
+    background: rgba(205, 127, 50, 0.2);
+    border: 2px solid rgba(205, 127, 50, 0.5);
+    color: #cd7f32;
 }
 
 .participant-info {
     flex: 1;
+    margin-right: 15px;
 }
 
 .participant-name {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     color: white;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .participant-status {
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.8);
-    background: rgba(0, 0, 0, 0.1);
-    padding: 3px 10px;
-    border-radius: 20px;
-    display: inline-block;
+    font-size: 14px;
+    opacity: 0.7;
 }
 
 .participant-data {
     display: flex;
     flex-direction: column;
-    margin-left: auto;
     align-items: flex-end;
-    min-width: 180px;
+    min-width: 120px;
 }
 
 .participant-heart-rate {
-    font-size: 64px;
+    font-size: 32px;
     font-weight: bold;
-    color: white;
-    display: flex;
-    align-items: baseline;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    margin-bottom: 10px;
+    color: #ff5252;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px rgba(255, 82, 82, 0.3);
+    transition: all 0.3s ease;
+}
+
+.leading .participant-heart-rate {
+    font-size: 36px;
+    color: #ff3838;
+    text-shadow: 0 0 15px rgba(255, 56, 56, 0.5);
 }
 
 .participant-heart-rate span {
-    font-size: 24px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-left: 5px;
+    font-size: 16px;
+    opacity: 0.8;
 }
 
 .participant-metrics {
@@ -402,19 +484,8 @@ body {
 .metric {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 18px;
-}
-
-.heart-metric {
-    color: #ff5e62;
-}
-
-.energy-metric {
-    color: #ffcc33;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .heart-icon, .energy-icon {
@@ -437,7 +508,7 @@ body {
 
 .chart-panel {
     flex: 2;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 20px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     padding: 25px;
@@ -450,10 +521,10 @@ body {
 
 .heart-rate-zones {
     position: absolute;
-    right: 0;
+    right: 25px;
     top: 80px;
     bottom: 25px;
-    width: 30px;
+    width: 40px;
     display: flex;
     flex-direction: column;
     gap: 0;
@@ -467,30 +538,37 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .zone-circle {
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 10px;
+    font-size: 14px;
     font-weight: bold;
     color: white;
-    margin-bottom: 2px;
+    margin-bottom: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .zone-label {
-    font-size: 9px;
+    position: absolute;
+    right: 45px;
+    font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    transform: rotate(180deg);
     white-space: nowrap;
-    letter-spacing: -0.5px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 3px 8px;
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.heart-rate-zone:hover .zone-label {
+    opacity: 1;
 }
 
 .zone-1 .zone-circle { background-color: #ff5e62; border: 1px solid rgba(255, 255, 255, 0.7); }
@@ -512,7 +590,7 @@ body {
 .chart-container {
     flex: 1;
     position: relative;
-    margin-right: 30px; /* 为右侧的心率区间指示器留出空间 */
+    margin-right: 50px; /* 为右侧的心率区间指示器留出空间 */
 }
 
 /* 结果界面 */
@@ -617,8 +695,9 @@ body {
     width: 80%;
     max-width: 800px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 16px;
     padding: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
 .result-item {
@@ -665,6 +744,47 @@ body {
     font-size: 16px;
     opacity: 0.8;
     margin-left: 5px;
+}
+
+/* 空状态样式 */
+.empty-participants {
+    text-align: center;
+    padding: 30px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 18px;
+}
+
+/* 调试按钮样式 */
+.debug-panel {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.debug-panel button {
+    padding: 12px 24px;
+    margin: 5px;
+    background-color: rgba(64, 158, 255, 0.8);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.debug-panel button:hover {
+    background-color: rgba(64, 158, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+#debug-switch-screen {
+    background-color: rgba(103, 194, 58, 0.8);
+}
+
+#debug-switch-screen:hover {
+    background-color: rgba(103, 194, 58, 1);
 }
 
 /* 响应式设计 */

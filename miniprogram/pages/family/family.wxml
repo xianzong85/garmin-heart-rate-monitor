@@ -1,0 +1,131 @@
+<view class="family-container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">家庭成员管理</text>
+    <view class="add-btn" bindtap="showAddMemberModal">
+      <text>+</text>
+      <text>添加成员</text>
+    </view>
+  </view>
+
+  <!-- 家庭成员列表 -->
+  <view class="family-list" wx:if="{{familyMembers.length > 0}}">
+    <view class="family-item" wx:for="{{familyMembers}}" wx:key="id">
+      <view class="member-avatar">
+        <text class="member-initial">{{item.nickname[0]}}</text>
+      </view>
+      <view class="member-info">
+        <text class="member-name">{{item.nickname}}</text>
+        <view class="member-details">
+          <text class="member-gender">{{genders[item.gender]}}</text>
+          <text class="member-relation">{{item.relationship}}</text>
+          <text class="member-birth" wx:if="{{item.birth_date}}">{{item.birth_date}}</text>
+        </view>
+      </view>
+      <view class="member-actions">
+        <view class="action-btn edit" bindtap="showEditMemberModal" data-id="{{item.id}}">
+          <text>编辑</text>
+        </view>
+        <view class="action-btn delete" bindtap="deleteFamilyMember" data-id="{{item.id}}">
+          <text>删除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <view class="empty-icon">空</view>
+    <text class="empty-text">暂无家庭成员</text>
+    <text class="empty-tip">点击"添加成员"按钮添加家庭成员</text>
+    <button class="primary-btn" bindtap="showAddMemberModal">添加成员</button>
+  </view>
+
+  <!-- 添加成员弹窗 -->
+  <view class="modal-overlay" wx:if="{{showAddModal}}" bindtap="hideAddMemberModal"></view>
+  <view class="modal-container" wx:if="{{showAddModal}}">
+    <view class="modal-header">
+      <text class="modal-title">添加家庭成员</text>
+      <view class="modal-close" bindtap="hideAddMemberModal">×</view>
+    </view>
+    <view class="modal-content">
+      <view class="form-item">
+        <text class="form-label">昵称</text>
+        <input class="form-input" placeholder="请输入昵称" value="{{newMember.nickname}}" bindinput="handleInputChange" data-field="nickname" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">性别</text>
+        <picker class="form-picker" range="{{genders}}" value="{{newMember.gender}}" bindchange="handlePickerChange" data-field="gender">
+          <view class="picker-value">{{genders[newMember.gender]}}</view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">出生日期</text>
+        <picker class="form-picker" mode="date" value="{{newMember.birthDate}}" bindchange="handleDateChange">
+          <view class="picker-value">{{newMember.birthDate || '请选择出生日期'}}</view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">关系</text>
+        <picker class="form-picker" range="{{relationships}}" value="{{relationships.indexOf(newMember.relationship)}}" bindchange="handlePickerChange" data-field="relationship">
+          <view class="picker-value">{{newMember.relationship}}</view>
+        </picker>
+      </view>
+
+      <view class="modal-footer">
+        <button class="cancel-btn" bindtap="hideAddMemberModal">取消</button>
+        <button class="confirm-btn" bindtap="addFamilyMember">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑成员弹窗 -->
+  <view class="modal-overlay" wx:if="{{showEditModal}}" bindtap="hideEditMemberModal"></view>
+  <view class="modal-container" wx:if="{{showEditModal}}">
+    <view class="modal-header">
+      <text class="modal-title">编辑家庭成员</text>
+      <view class="modal-close" bindtap="hideEditMemberModal">×</view>
+    </view>
+    <view class="modal-content">
+      <view class="form-item">
+        <text class="form-label">昵称</text>
+        <input class="form-input" placeholder="请输入昵称" value="{{editingMember.nickname}}" bindinput="handleInputChange" data-field="nickname" />
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">性别</text>
+        <picker class="form-picker" range="{{genders}}" value="{{editingMember.gender}}" bindchange="handlePickerChange" data-field="gender">
+          <view class="picker-value">{{genders[editingMember.gender]}}</view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">出生日期</text>
+        <picker class="form-picker" mode="date" value="{{editingMember.birthDate}}" bindchange="handleDateChange">
+          <view class="picker-value">{{editingMember.birthDate || '请选择出生日期'}}</view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">关系</text>
+        <picker class="form-picker" range="{{relationships}}" value="{{relationships.indexOf(editingMember.relationship)}}" bindchange="handlePickerChange" data-field="relationship">
+          <view class="picker-value">{{editingMember.relationship}}</view>
+        </picker>
+      </view>
+
+      <view class="modal-footer">
+        <button class="cancel-btn" bindtap="hideEditMemberModal">取消</button>
+        <button class="confirm-btn" bindtap="updateFamilyMember">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载中提示 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

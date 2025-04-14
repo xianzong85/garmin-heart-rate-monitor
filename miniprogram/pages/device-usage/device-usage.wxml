@@ -1,0 +1,52 @@
+<view class="usage-container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">设备使用记录</text>
+  </view>
+
+  <!-- 使用记录列表 -->
+  <view class="usage-list" wx:if="{{usageRecords.length > 0}}">
+    <view class="usage-item" wx:for="{{usageRecords}}" wx:key="id">
+      <view class="usage-header">
+        <view class="device-info">
+          <text class="device-name">{{item.device_name || '未知设备'}}</text>
+          <text class="member-name" wx:if="{{item.member_name}}">使用人: {{item.member_name}}</text>
+        </view>
+        <view class="usage-status {{item.status === '使用中' ? 'active' : ''}}">
+          <text>{{item.status || '已完成'}}</text>
+        </view>
+      </view>
+
+      <view class="usage-details">
+        <view class="time-info">
+          <view class="time-item">
+            <text class="time-label">开始时间</text>
+            <text class="time-value">{{item.formattedStartTime || '未记录'}}</text>
+          </view>
+          <view class="time-item">
+            <text class="time-label">结束时间</text>
+            <text class="time-value">{{item.formattedEndTime || '进行中'}}</text>
+          </view>
+        </view>
+
+        <view class="duration-info" wx:if="{{item.duration}}">
+          <text class="duration-label">使用时长</text>
+          <text class="duration-value">{{item.duration}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <view class="empty-icon">空</view>
+    <text class="empty-text">暂无使用记录</text>
+    <text class="empty-tip">连接设备后会自动记录使用情况</text>
+  </view>
+
+  <!-- 加载中提示 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

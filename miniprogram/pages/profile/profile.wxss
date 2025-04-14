@@ -1,0 +1,216 @@
+/* pages/profile/profile.wxss */
+.profile-container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 用户信息区域 */
+.user-info-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  margin-right: 30rpx;
+  background-color: #409eff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 48rpx;
+  font-weight: bold;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.nickname {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.user-info-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 0;
+}
+
+.avatar-placeholder {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  margin-bottom: 20rpx;
+  background-color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+  font-size: 48rpx;
+  font-weight: bold;
+}
+
+.login-btn {
+  background-color: #007aff;
+  color: #fff;
+  font-size: 28rpx;
+  padding: 10rpx 40rpx;
+  border-radius: 30rpx;
+  border: none;
+}
+
+/* 菜单区域 */
+.menu-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+/* 移除图标相关样式 */
+
+.menu-content {
+  flex: 1;
+}
+
+.menu-title {
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.menu-description {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.menu-arrow {
+  font-size: 32rpx;
+  color: #999;
+}
+
+/* 家庭成员预览区域 */
+.family-preview-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.section-action {
+  font-size: 28rpx;
+  color: #007aff;
+}
+
+.family-members-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.family-member-item {
+  width: 33.33%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.member-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50rpx;
+  background-color: #007aff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.member-initial {
+  font-size: 40rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+.member-info {
+  text-align: center;
+}
+
+.member-name {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.member-relation {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 加载中提示 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 0;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 6rpx solid #f3f3f3;
+  border-top: 6rpx solid #007aff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
